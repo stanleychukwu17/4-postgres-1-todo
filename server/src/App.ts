@@ -1,7 +1,7 @@
 require('dotenv').config()
 import express from 'express'
-// import pool from './db.ts'
-const pool = require('./db')
+import pool from './db'
+import routes from './routes'
 
 // set up graphQL server
 const {graphqlHTTP} = require('express-graphql')
@@ -19,7 +19,7 @@ pool.connect((err: any, client: any, release: () => void) => {
 
     app.listen(port, () => {
         console.log(`now listening to request from port ${port}`)
-        // routes(app)
+        routes(app)
     })
 
     release()
