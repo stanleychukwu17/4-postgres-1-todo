@@ -12,6 +12,7 @@ app.use(express.json());
 const {ObjectId} = require('mongodb');
 const {connectToDb, getDb} = require('./db')
 
+
 //* opens connection to the mongodb database before listening for request
 let db: any
 connectToDb((err: any) => {
