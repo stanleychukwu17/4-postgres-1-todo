@@ -1,16 +1,18 @@
 import { Express, Request, Response, NextFunction } from "express";
+import {register_a_new_user} from './controllers/users.controller'
 
 const routes = (app: Express) => {
-    // routes for user and everything that has to do with the user
-    app.post('/users/new_user', (req: Request, res: Response) => {
-        const {name, password, gender} = req.body
+    //--START-- routes for user and everything that has to do with the user
+    app.post('/users/new_user', async (req: Request, res: Response) => {
 
-        console.log(req.body)
+        const dts = await register_a_new_user(req.body)
+        console.log(dts)
+
         res.json({msg:'we are good!'})
     })
 
 
-    // routes for todo and everything that has to do with the todo
+    //--START-- routes for todo and everything that has to do with the todo
 }
 
 export default routes
