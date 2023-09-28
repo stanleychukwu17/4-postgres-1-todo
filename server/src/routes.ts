@@ -6,7 +6,7 @@ const routes = (app: Express) => {
     app.post('/users/new_user', async (req: Request, res: Response) => {
 
         const dts = await register_a_new_user(req.body)
-        console.log(dts)
+        console.log('returned from registration', dts)
 
         res.json({msg:'we are good!'})
     })
