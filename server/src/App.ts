@@ -1,6 +1,6 @@
 require('dotenv').config()
 import express from 'express'
-import pool from './db'
+import pool from './db' // postgres database
 import routes from './routes'
 
 // set up graphQL server
