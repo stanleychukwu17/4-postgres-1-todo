@@ -6,7 +6,7 @@ const routes = (app: Express) => {
     // checks to see if our servers are running as they should
     app.get('/healthCheck', (req, res) => {
         const currentFilename = __filename;
-        errorLogger.error({currentFilename}, 'checking my log')
+        log.info({currentFilename}, 'checking my log')
         res.json('its all good')
     })
 

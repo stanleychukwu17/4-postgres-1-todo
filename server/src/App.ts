@@ -2,15 +2,17 @@ require('dotenv').config()
 import express from 'express'
 import pool from './db' // postgres database
 import routes from './routes'
+import {log, errorLogger} from './logger'
 import { get_the_line_where_this_error_occurred } from './functions/utils'
 
 
-// import {log, errorLogger} from './logger'
+//--START-- how to use the logger for logging both errors and infos
 // errorLogger.info({stanley:'my  name is stanley', lastName: 'my last name is chukwu'})
 
 // const error = new Error('Error occurred').stack!; // this will help me to get the line where the error occurred, then we will use regular expression to capture only the information that wee need
 // const capturedErrorLine = get_the_line_where_this_error_occurred({errorMessage: error})
 // errorLogger.error({'lineNumber': capturedErrorLine}, 'see error message 2')
+//--END--
 
 
 // set up graphQL server

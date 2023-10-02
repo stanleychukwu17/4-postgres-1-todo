@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-
+import { log } from '../logger/';
 
 import {userRegisterInfo} from '../types/users'
 import {show_bad_message, show_good_message} from '../functions/utils'
