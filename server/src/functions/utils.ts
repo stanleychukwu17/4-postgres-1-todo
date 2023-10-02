@@ -9,7 +9,7 @@ export const show_bad_message = (cause: string) => {
 // for showing successful messages
 export const show_good_message = (cause?: string) => {
     return {
-        'msg':'bad',
+        'msg':'okay',
         'cause':cause || 'everything is okay'
     }
 }
