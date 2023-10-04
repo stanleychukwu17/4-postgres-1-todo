@@ -4,6 +4,7 @@ import pool from '../db'
 
 import {userRegisterInfo, userLoginInfo} from '../types/users'
 import {show_bad_message, show_good_message, generate_fake_id} from '../functions/utils'
+import {signJWT} from '../functions/jwt.utils'
 
 // checks if a user has an active session or creates a new active session for the user_id received
 async function createSession (user_id:number) {
@@ -88,7 +89,6 @@ export async function login_this_user (userInfo: userLoginInfo) {
     const {username, password} = userInfo;
     const checks_array = [username, password] // want to make sure all fields are not less than zero
     let found_an_empty_value = false
-    // const success_message = 'Your registration was successfully completed, You can now login with your username/email and password'
 
     // checks to make sure all fields are not less than zero in length
     checks_array.forEach(item => {
@@ -120,13 +120,13 @@ export async function login_this_user (userInfo: userLoginInfo) {
     // creates a new session for the user
     const session = await createSession(user_id); // get the session fake_id, use the fake_id to create the access token and refresh token
     const session_fid = session.session_fid as number
-    console.log(session)
 
-    // create access token
+    // create access and refresh tokens
     const payload = {user_id: user_id, session_fid: session_fid}
     const accessToken = signJWT(payload, "7d");
+    const refreshToken = signJWT({session_fid}, "1y");
 
-    const refreshToken = signJWT({ sessionId: session.sessionId }, "1y");
-
-    return show_good_message('e go')
+    const done = show_good_message()
+    const dts = {user_id, session_fid, refreshToken, accessToken}
+    return {...done, ...dts}
 }
