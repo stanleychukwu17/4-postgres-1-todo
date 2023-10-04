@@ -5,7 +5,7 @@ import pool from '../db'
 import {userRegisterInfo, userLoginInfo} from '../types/users'
 import {show_bad_message, show_good_message, generate_fake_id} from '../functions/utils'
 
-
+// checks if a user has an active session or creates a new active session for the user_id received
 async function createSession (user_id:number) {
     const good_msg = show_good_message()
 
@@ -118,8 +118,15 @@ export async function login_this_user (userInfo: userLoginInfo) {
     }
 
     // creates a new session for the user
-    const session = await createSession(user_id);
+    const session = await createSession(user_id); // get the session fake_id, use the fake_id to create the access token and refresh token
+    const session_fid = session.session_fid as number
     console.log(session)
+
+    // create access token
+    const payload = {user_id: user_id, session_fid: session_fid}
+    const accessToken = signJWT(payload, "7d");
+
+    const refreshToken = signJWT({ sessionId: session.sessionId }, "1y");
 
     return show_good_message('e go')
 }
