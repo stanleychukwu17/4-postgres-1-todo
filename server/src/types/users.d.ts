@@ -5,3 +5,5 @@ export type userRegisterInfo = {
     password: string;
     gender: 'male'|'female';
 }
+
+export type userLoginInfo = Pick<userRegisterInfo, "username" | "password">

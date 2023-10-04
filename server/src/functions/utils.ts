@@ -14,6 +14,13 @@ export const show_good_message = (cause?: string) => {
     }
 }
 
+export const generate_fake_id = (id:number) => {
+    // Generate a random number between 100 and 999 (inclusive of 100, exclusive of 999)
+    const randomNumber = Math.floor(Math.random() * (999 - 100 + 1)) + 100;
+    const new_fake_id = `${id}${randomNumber}`
+    return Number(new_fake_id);
+}
+
 // returns the exact line where an error occurred including the filePath
 export function get_the_line_where_this_error_occurred({errorMessage}: {errorMessage: string}) {
     const regex = /\(([^)]+)\)/; // captures the first "(" and everything in between until it reaches the first ")", you can ask chatGPT to explain to you the regular expression code
