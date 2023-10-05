@@ -1,5 +1,7 @@
 require('dotenv').config()
 import express from 'express'
+import cors from 'cors'
+
 import pool from './db' // postgres database
 import routes from './routes'
 import {log, errorLogger} from './logger'
@@ -14,7 +16,6 @@ import { get_the_line_where_this_error_occurred } from './functions/utils'
 // errorLogger.error({'lineNumber': capturedErrorLine}, 'see error message 2')
 //--END--
 
-
 // set up graphQL server
 const {graphqlHTTP} = require('express-graphql')
 
@@ -22,6 +23,12 @@ const {graphqlHTTP} = require('express-graphql')
 const port = process.env.PORT || 4000
 const app = express();
 app.use(express.json());
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // Allow cookies and HTTP authentication
+    optionsSuccessStatus: 204, // Set the status for successful preflight requests
+}))
 
 // for quick opening of port if you don't have time to wait for the database connection before opening of port
 // app.listen(port, () => {

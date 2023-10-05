@@ -36,13 +36,13 @@ export async function register_a_new_user(userInfo:userRegisterInfo) {
 
     // checks to make sure all fields are not less than zero in length
     checks_array.forEach(item => {
-        if (typeof item === 'undefined' || item.length <= 0) {
+        if (typeof item === 'undefined' || item.length <= 1) {
             found_an_empty_value = true
         }
     })
 
     if (found_an_empty_value) {
-        return show_bad_message('please fill up all the required fields, some fields are empty')
+        return show_bad_message('please fill up all the required fields with minimum of two characters')
     }
 
     try {
@@ -61,7 +61,7 @@ export async function register_a_new_user(userInfo:userRegisterInfo) {
         return show_bad_message('This username already exists')
     }
 
-    if (password.length <= 5) {
+    if (password.length <= 4) {
         return show_bad_message('Your password is too short, it should be at least 5 characters')
     }
 
