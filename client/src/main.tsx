@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider, } from "react-router-dom";
 
 import App from './App.tsx'
 import ErrorComp from './components/ErrorComp.tsx'
-import LoginComp from "./components/LoginComp"
+import LoginComp from "./components/LoginComp/LoginComp.tsx"
 import './index.css'
 
 const router = createBrowserRouter([
@@ -21,7 +21,7 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <main className="bg-[#fffefb] h-screen relative text-[#3c2f41]">
+        <main className="_d5H min-h-screen bg-[#fffefb] text-[#3c2f41] padding-x">
             <RouterProvider router={router} />
         </main>
     </React.StrictMode>,
