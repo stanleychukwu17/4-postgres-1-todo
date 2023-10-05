@@ -1,5 +1,10 @@
 import { useForm, SubmitHandler } from "react-hook-form"
+import axios from 'axios';
 import './LoginComp..scss'
+
+const backEndPort = import.meta.env.VITE_BACKEND_PORT;
+
+console.log(import.meta.env)
 
 type LoginForRHF = {
     username: string
@@ -25,6 +30,18 @@ export default function LoginComp() {
 
     const submitRegistration: SubmitHandler<RegisterRHF> = (data) => {
         console.log(data, 'Register lets do dis!!!')
+        axios.post(`${backEndPort}/users/new_user`, data)
+        .then((res) => {
+            console.log(res)
+            // Update the state with the fetched data
+            // setData(response.data);
+            // setLoading(false);
+        })
+        .catch((err) => {
+            console.log(err)
+            // console.error('Error:', error);
+            // setLoading(false);
+        });
     }
 
     return (
