@@ -24,6 +24,14 @@ $milk_color: #fffefb;
                 border-radius: 3px;
                 border: 2px solid $purple_color;
             }
+            p {
+                display: block;
+                position: relative;
+                margin: 6px 0 0;
+                font-size: 13px;
+                font-weight: bold;
+                color: #df0e3a;
+            }
         }
     }
     .btnCvr {
