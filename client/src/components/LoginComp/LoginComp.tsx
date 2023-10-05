@@ -33,7 +33,6 @@ export default function LoginComp() {
     }
 
     const submitRegistration: SubmitHandler<RegisterRHF> = (data) => {
-        // console.log(data, obj, 'Register lets do dis!!!')
 
         setIsLoading2(true) // disables the submit button
 
@@ -47,12 +46,12 @@ export default function LoginComp() {
             // } else {
 
             // }
-            setIsLoading2(false)
+            setIsLoading2(false) // enable the submit button
         })
         .catch((err) => {
             console.log(err)
             // console.error('Error:', error);
-            setIsLoading2(false)
+            setIsLoading2(false) // enable the submit button
         });
 
         // clears all of the input field

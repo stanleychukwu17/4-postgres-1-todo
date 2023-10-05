@@ -1,5 +1,6 @@
 import {BsCheckCircle, BsExclamationCircle} from 'react-icons/bs'
 import {AiOutlineClose} from 'react-icons/ai'
+import { useCallback, useEffect } from 'react';
 
 export type MessageCompProps = {
     msg_type: 'okay'|'bad'|'';
@@ -9,11 +10,26 @@ export type MessageCompProps = {
 
 export default function MessageComp({msg_type, msg_dts, closeAlert}: MessageCompProps) {
 
-    const timeToCloseThisAlert = () => {
+    const timeToCloseThisAlert = useCallback(() => {
         if (closeAlert) {
             closeAlert(false)
         }
-    }
+    }, [closeAlert])
+
+    const check_if_we_should_close_alert = useCallback((event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            timeToCloseThisAlert()
+        }
+    }, [timeToCloseThisAlert])
+
+    useEffect(() => {
+        window.addEventListener("keyup", check_if_we_should_close_alert)
+
+        return () => {
+            window.removeEventListener("keyup", check_if_we_should_close_alert)
+        }
+    }, [check_if_we_should_close_alert])
+
 
     return (
         <div className="fixed z-10 top-0 right-0 bottom-0 left-0 bg-[rgba(0,0,0,0.8)] shadow-2xl">
