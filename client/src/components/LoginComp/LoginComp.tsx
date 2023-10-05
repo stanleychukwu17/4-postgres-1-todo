@@ -2,6 +2,7 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import axios from 'axios';
 import './LoginComp..scss'
 import { useState } from "react";
+import MessageComp, {MessageCompProps} from "../Message/MessageComp";
 
 const backEndPort = import.meta.env.VITE_BACKEND_PORT;
 
@@ -21,22 +22,51 @@ type RegisterRHF = {
 
 export default function LoginComp() {
     const [isLoading2, setIsLoading2] = useState<boolean>(false)
+    const [showAlert, setShowAlert] = useState<boolean>(false)
+    const [alertMsg, setAlertMsg] = useState<MessageCompProps>({msg_type:'', msg_dts:''})
 
     const { register: registerLogin, handleSubmit: handleLogin, formState: {errors:loginError} } = useForm<LoginForRHF>()
-    const { register: registerReg, handleSubmit: handleRegister, formState: {errors:regError} } = useForm<RegisterRHF>()
+    const { register: registerReg, handleSubmit: handleRegister,setValue: regSetValue, formState: {errors:regError} } = useForm<RegisterRHF>()
 
     const submitLogin: SubmitHandler<LoginForRHF> = (data) => {
         console.log(data, 'Login lets do dis!!!')
     }
 
     const submitRegistration: SubmitHandler<RegisterRHF> = (data) => {
-        console.log(data, 'Register lets do dis!!!')
-        setIsLoading2(true)
+        // console.log(data, obj, 'Register lets do dis!!!')
+
+        setIsLoading2(true) // disables the submit button
+
+        axios.post(`${backEndPort}/users/new_user`, data, {headers: {'Content-Type': 'application/json'}})
+        .then((res) => {
+            console.log(res)
+            setShowAlert(true)
+            setAlertMsg({'msg_type':res.data.msg, 'msg_dts':res.data.cause})
+            // if (res.data.msg === 'okay') {
+
+            // } else {
+
+            // }
+            setIsLoading2(false)
+        })
+        .catch((err) => {
+            console.log(err)
+            // console.error('Error:', error);
+            setIsLoading2(false)
+        });
+
+        // clears all of the input field
+        Object.keys(data).forEach((item) => {
+            // console.log(item)
+            regSetValue(item as "username" | "password" | "name" | "email" | "gender" | "confirm_password", "")
+        })
     }
 
     return (
         <div className="block relative my-14 padding-x">
-            <div className="pb-10 text-4xl">Hi there! Welcome to Todo</div>
+            {showAlert && <MessageComp {...alertMsg} closeAlert={setShowAlert} />}
+
+            <div className="pb-10 text-4xl">Hi there! Welcome to TodoM</div>
             <div className="ovrCover flex">
                 <div className="w-1/2">
                     <div className="titleUp">Login</div>
