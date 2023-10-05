@@ -33,32 +33,25 @@ export default function LoginComp() {
     }
 
     const submitRegistration: SubmitHandler<RegisterRHF> = (data) => {
-
-        setIsLoading2(true) // disables the submit button
+        setIsLoading2(true)
 
         axios.post(`${backEndPort}/users/new_user`, data, {headers: {'Content-Type': 'application/json'}})
         .then((res) => {
             console.log(res)
             setShowAlert(true)
             setAlertMsg({'msg_type':res.data.msg, 'msg_dts':res.data.cause})
-            // if (res.data.msg === 'okay') {
+            setIsLoading2(false)
 
-            // } else {
-
-            // }
-            setIsLoading2(false) // enable the submit button
+            // clears all of the input field for registering
+            Object.keys(data).forEach((item) => {
+                regSetValue(item as "username" | "password" | "name" | "email" | "gender" | "confirm_password", "")
+            })
         })
         .catch((err) => {
-            console.log(err)
-            // console.error('Error:', error);
-            setIsLoading2(false) // enable the submit button
+            setShowAlert(true)
+            setAlertMsg({'msg_type':'bad', 'msg_dts':err.message+', please contact the customer support and report this issue'})
+            setIsLoading2(false)
         });
-
-        // clears all of the input field
-        Object.keys(data).forEach((item) => {
-            // console.log(item)
-            regSetValue(item as "username" | "password" | "name" | "email" | "gender" | "confirm_password", "")
-        })
     }
 
     return (
@@ -93,28 +86,28 @@ export default function LoginComp() {
                         <div className="inputCover">
                             <div className="inpTitle font-bold">name</div>
                             <div className="inpInput">
-                                <input type="text" {...registerReg("name", { required: false })} />
+                                <input type="text" {...registerReg("name", {required: true})} />
                                 {regError.name && <p>This field is required!!!</p>}
                             </div>
                         </div>
                         <div className="inputCover">
                             <div className="inpTitle font-bold">username</div>
                             <div className="inpInput">
-                                <input type="text" {...registerReg("username", { required: false })} />
+                                <input type="text" {...registerReg("username", {required: true})} />
                                 {regError.username && <p>This field is required!!!</p>}
                             </div>
                         </div>
                         <div className="inputCover">
                             <div className="inpTitle font-bold">email</div>
                             <div className="inpInput">
-                                <input type="text" {...registerReg("email", { required: false })} />
+                                <input type="text" {...registerReg("email", {required: true})} />
                                 {regError.email && <p>This field is required!!!</p>}
                             </div>
                         </div>
                         <div className="inputCover">
                             <div className="inpTitle font-bold">gender</div>
                             <div className="inpInput">
-                                <select {...registerReg("gender", { required: false })}>
+                                <select {...registerReg("gender", {required: true})}>
                                     <option value="">Select your gender</option>
                                     <option value="male">male</option>
                                     <option value="female">female</option>
@@ -125,14 +118,14 @@ export default function LoginComp() {
                         <div className="inputCover">
                             <div className="inpTitle">Password</div>
                             <div className="inpInput">
-                                <input type="password" {...registerReg("password", { required: false })} />
+                                <input type="password" {...registerReg("password", {required: true})} />
                                 {regError.password && <p>This field is required!!!</p>}
                             </div>
                         </div>
                         <div className="inputCover">
                             <div className="inpTitle">Re-enter Password</div>
                             <div className="inpInput">
-                                <input type="password" {...registerReg("confirm_password", { required: false })} />
+                                <input type="password" {...registerReg("confirm_password", {required: true})} />
                                 {regError.confirm_password && <p>This field is required!!!</p>}
                             </div>
                         </div>

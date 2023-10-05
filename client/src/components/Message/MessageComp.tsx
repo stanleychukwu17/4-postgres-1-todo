@@ -49,7 +49,7 @@ export default function MessageComp({msg_type, msg_dts, closeAlert}: MessageComp
                         {msg_type === 'okay' && <p className="text-[#00b894]">Success</p>}
                         {msg_type === 'bad' && <p className="text-[#df0e3a]">Error</p>}
                     </div>
-                    <div className="text-lg font-semibold pt-2 pb- first-letter:capitalize text-black">
+                    <div className="text-base font-semibold pt-2 pb- first-letter:capitalize text-black">
                         {msg_dts}
                     </div>
                 </div>
