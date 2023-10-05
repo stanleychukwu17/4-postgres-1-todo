@@ -37,7 +37,9 @@ $milk_color: #fffefb;
     .btnCvr {
         margin: 10px 0 0;
 
-        button {
+        button, p {
+            width: 160px;
+            text-align: center;
             background-color: $purple_color;
             padding: 10px 25px;
             font-size: 17px;
@@ -46,6 +48,11 @@ $milk_color: #fffefb;
             color: $milk_color;
             border-radius: 2px;
             box-shadow: 3px 3px 0 rgba(0,0,0,0.12);
+        }
+        p {
+            opacity: .5;
+            box-shadow: none;
+            cursor: progress;
         }
     }
 }
