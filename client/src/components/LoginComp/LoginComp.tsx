@@ -1,7 +1,8 @@
-import { useForm, SubmitHandler } from "react-hook-form"
+import {useState} from "react";
+import {useForm, SubmitHandler} from "react-hook-form"
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import './LoginComp..scss'
-import { useState } from "react";
 import MessageComp, {MessageCompProps} from "../Message/MessageComp";
 
 const backEndPort = import.meta.env.VITE_BACKEND_PORT;
@@ -21,15 +22,37 @@ type RegisterRHF = {
 }
 
 export default function LoginComp() {
+    const navigate = useNavigate();
+    const [isLoading1, setIsLoading1] = useState<boolean>(false)
     const [isLoading2, setIsLoading2] = useState<boolean>(false)
     const [showAlert, setShowAlert] = useState<boolean>(false)
     const [alertMsg, setAlertMsg] = useState<MessageCompProps>({msg_type:'', msg_dts:''})
 
-    const { register: registerLogin, handleSubmit: handleLogin, formState: {errors:loginError} } = useForm<LoginForRHF>()
-    const { register: registerReg, handleSubmit: handleRegister,setValue: regSetValue, formState: {errors:regError} } = useForm<RegisterRHF>()
+    const { register: registerLogin, handleSubmit: handleLogin, setValue: loginSetValue, formState: {errors:loginError} } = useForm<LoginForRHF>()
+    const { register: registerReg, handleSubmit: handleRegister, setValue: regSetValue, formState: {errors:regError} } = useForm<RegisterRHF>()
 
     const submitLogin: SubmitHandler<LoginForRHF> = (data) => {
-        console.log(data, 'Login lets do dis!!!')
+        axios.post(`${backEndPort}/users/login`, data, {headers: {'Content-Type': 'application/json'}})
+        .then((res) => {
+            console.log(res)
+            if(res.data.msg === 'okay') {
+                navigate('/')
+
+                // clears all of the input field for login
+                Object.keys(data).forEach((item) => {
+                    loginSetValue(item as "username" | "password", "")
+                })
+            } else {
+                setShowAlert(true)
+                setAlertMsg({'msg_type':res.data.msg, 'msg_dts':res.data.cause})
+            }
+            setIsLoading1(false)
+        })
+        .catch((err) => {
+            setShowAlert(true)
+            setAlertMsg({'msg_type':'bad', 'msg_dts':err.message+', please contact the customer support and report this issue'})
+            setIsLoading1(false)
+        });
     }
 
     const submitRegistration: SubmitHandler<RegisterRHF> = (data) => {
@@ -37,7 +60,6 @@ export default function LoginComp() {
 
         axios.post(`${backEndPort}/users/new_user`, data, {headers: {'Content-Type': 'application/json'}})
         .then((res) => {
-            console.log(res)
             setShowAlert(true)
             setAlertMsg({'msg_type':res.data.msg, 'msg_dts':res.data.cause})
             setIsLoading2(false)
@@ -77,7 +99,10 @@ export default function LoginComp() {
                                 {loginError.password && <p>This field is required!!!</p>}
                             </div>
                         </div>
-                        <div className="btnCvr"><button type="submit">Login</button></div>
+                        <div className="btnCvr">
+                            {!isLoading1 && <button type="submit">Login</button>}
+                            {isLoading1 && <p>Loading...</p>}
+                        </div>
                     </form>
                 </div>
                 <div className="w-1/2">
