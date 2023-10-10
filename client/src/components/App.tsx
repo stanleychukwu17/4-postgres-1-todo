@@ -10,7 +10,7 @@ export default function App() {
 
     return (
         <div className="">
-            <Header />
+            <Header must_be_logged_in={true} />
             <div className="">
                 
             </div>

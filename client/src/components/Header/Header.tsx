@@ -1,6 +1,28 @@
-import { Link } from "react-router-dom"
+import { useLayoutEffect } from "react";
+import { Link, useNavigate } from "react-router-dom"
 
-export default function Header() {
+const user_dts = {loggedIn: 'no'}
+const cached_user_dts = localStorage.getItem('user');
+if (cached_user_dts) {
+    console.log('no user here!')
+    user_dts.loggedIn = 'yes'
+}
+console.log(cached_user_dts)
+
+
+type headerProps = {
+    must_be_logged_in: boolean
+}
+export default function Header(props: headerProps) {
+    const navigate = useNavigate()
+
+    useLayoutEffect(() => {
+        if (props.must_be_logged_in === true) {
+            navigate('/login')
+        }
+    }, [navigate, props.must_be_logged_in])
+
+
     return (
         <header className="flex justify-between items-center py-5 px-5 bg-[#e9f2ff]">
             <div className="text-2xl font-bold">TODO</div>

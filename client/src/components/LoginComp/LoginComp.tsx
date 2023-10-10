@@ -34,13 +34,14 @@ export default function LoginComp() {
     const submitLogin: SubmitHandler<LoginForRHF> = (data) => {
         axios.post(`${backEndPort}/users/login`, data, {headers: {'Content-Type': 'application/json'}})
         .then((res) => {
-            console.log(res)
+            console.log(res.data)
+
             if(res.data.msg === 'okay') {
-                navigate('/')
+                // navigate('/')
 
                 // clears all of the input field for login
                 Object.keys(data).forEach((item) => {
-                    loginSetValue(item as "username" | "password", "")
+                    loginSetValue(item as "username" | "password", "") // RHF hook used here
                 })
             } else {
                 setShowAlert(true)
