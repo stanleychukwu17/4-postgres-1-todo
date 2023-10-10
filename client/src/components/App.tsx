@@ -1,7 +1,11 @@
 // import HomeComp from "./components/HomeComp"
-
+import { useAppSelector } from "../redux/hook"
 
 export default function App() {
+    const userDts = useAppSelector((state) => state.user)
+
+    console.log(userDts)
+
     return (
         <div>
             <nav>

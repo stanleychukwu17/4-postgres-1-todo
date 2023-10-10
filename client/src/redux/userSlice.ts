@@ -6,7 +6,7 @@ type userDetailsType = {
     userId:number;
     session_fid:number
 }
-const initialState: userDetailsType = { name: '', userId:0, session_fid:0};
+const initialState: userDetailsType = { name: 'stanley', userId:0, session_fid:0};
 
 // Create a slice
 const userSlice = createSlice({
