@@ -1,12 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Define the initial state
-type userDetailsType = {
-    name: string;
-    userId:number;
-    session_fid:number
+export type userDetailsType = {
+    name?:string;
+    session_fid?:number;
+    loggedIn?:'yes'|'no';
 }
-const initialState: userDetailsType = { name: 'stanley', userId:0, session_fid:0};
+const initialState: userDetailsType = {
+    name: 'stanley',
+    loggedIn: 'no'
+};
 
 // Create a slice
 const userSlice = createSlice({

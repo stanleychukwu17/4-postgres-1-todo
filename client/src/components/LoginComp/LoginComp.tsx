@@ -37,7 +37,8 @@ export default function LoginComp() {
             console.log(res.data)
 
             if(res.data.msg === 'okay') {
-                // navigate('/')
+                localStorage.setItem('userDts', JSON.stringify(res.data));
+                navigate('/')
 
                 // clears all of the input field for login
                 Object.keys(data).forEach((item) => {
