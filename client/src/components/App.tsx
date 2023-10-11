@@ -9,7 +9,9 @@ export default function App() {
 
     return (
         <div className="">
-            <Header must_be_logged_in={true} />
+            <div className="hidden">
+                <Header />
+            </div>
             <div className="">
                 {loggedIn === 'no' && <HomeComp />}
                 {loggedIn === 'yes' && <ProfileComp />}

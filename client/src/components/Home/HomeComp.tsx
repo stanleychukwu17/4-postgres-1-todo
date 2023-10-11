@@ -4,6 +4,7 @@ import bigBackDrop from '../../assets/images/original_edited.png'
 import background_image from '../../assets/images/background_image.png'
 import logo from '../../assets/images/logo3.png'
 import sign_up from '../../assets/images/sign_up.png'
+import dbs from '../../assets/images/dbs.png'
 import './HomeComp.scss'
 
 export default function HomeComp() {
@@ -16,6 +17,9 @@ export default function HomeComp() {
                 <Link to="/login">
                     <img src={sign_up} alt="" />
                 </Link>
+            </div>
+            <div className="dbs_stanley">
+                <img src={dbs} alt="" />
             </div>
         </div>
     )
