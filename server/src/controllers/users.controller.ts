@@ -6,6 +6,7 @@ import {userRegisterInfo, userLoginInfo} from '../types/users'
 import {show_bad_message, show_good_message, generate_fake_id} from '../functions/utils'
 import {signJWT} from '../functions/jwt.utils'
 
+
 // checks if a user has an active session or creates a new active session for the user_id received
 async function createSession (user_id:number) {
     const good_msg = show_good_message()
@@ -32,7 +33,6 @@ export async function register_a_new_user(userInfo:userRegisterInfo) {
     const {name, username, email, password, gender} = userInfo;
     const checks_array = [name, username, email, password, gender] // want to make sure all fields are not less than zero
     let found_an_empty_value = false
-    const success_message = 'Your registration was successfully completed, You can now login with your username/email and password'
 
     // checks to make sure all fields are not less than zero in length
     checks_array.forEach(item => {
@@ -76,13 +76,11 @@ export async function register_a_new_user(userInfo:userRegisterInfo) {
             "INSERT INTO users (name, username, email, password, gender, date_added) VALUES ($1, $2, $3, $4, $5, now()) RETURNING *",
             [name.toLowerCase(), username.toLowerCase(), email.toLowerCase(), hash, gender]
         )
-        return show_good_message(success_message)
+        return show_good_message('Your registration was successfully completed, You can now login with your username/email and password')
     } catch (err:any) {
         errorLogger.error({pre:'Could not save a new user to the database'}, err.message);
         return show_bad_message('Could not save your information to the database, please contact our customer support for assistance');
     }
-
-    return show_good_message(success_message)
 }
 
 export async function login_this_user (userInfo: userLoginInfo) {
@@ -102,14 +100,14 @@ export async function login_this_user (userInfo: userLoginInfo) {
     }
 
     // checks to see if the user exists in our database
-    const qUser = await pool.query("SELECT id, password from users where username = $1 OR email = $1 limit 1", [username])
+    const qUser = await pool.query("SELECT id, name, password from users where username = $1 OR email = $1 limit 1", [username])
     if (qUser.rows.length <= 0) {
         return show_bad_message('Please, the username or email provided is not valid')
     }
 
     // grabs the hashed password from the result above
     const userDts = qUser.rows[0]
-    const {id:user_id, password: hashed_password} = userDts
+    const {id:user_id, password: hashed_password, name} = userDts
 
     // compare the password received to see if it is a valid password
     const validPassword = await bcrypt.compare(password, hashed_password)
@@ -122,11 +120,32 @@ export async function login_this_user (userInfo: userLoginInfo) {
     const session_fid = session.session_fid as number
 
     // create access and refresh tokens
-    const payload = {user_id: user_id, session_fid: session_fid}
+    const payload = {session_fid: session_fid}
     const accessToken = signJWT(payload, "7d");
     const refreshToken = signJWT({session_fid}, "1y");
 
     const done = show_good_message()
-    const dts = {user_id, session_fid, refreshToken, accessToken}
+    const dts = {name, session_fid, refreshToken, accessToken}
     return {...done, ...dts}
+}
+
+export async function logout_this_user (userInfo: {session_fid: number; refresh_token: string, access_token: string}) {
+    const {session_fid} = userInfo
+
+    try {
+        // get the session info and be sure that the session is active
+        const qUser = await pool.query("SELECT id FROM users_session WHERE fake_id = $1 and active = 'yes' limit 1", [Number(session_fid)])
+        console.log(qUser.rows[0])
+        if (qUser.rows.length <= 0) {
+            return show_bad_message('Please, the details provided is not valid')
+        }
+
+        // get the user_id from the access toke to verify
+        const {id: session_id} = qUser.rows[0]
+        const qUpdate = await pool.query("UPDATE users_session SET active = 'no' where id = $1", [session_id])
+        return show_good_message()
+    } catch (err: any) {
+        errorLogger.error({pre:'error with logging out a user'}, err.message);
+        return show_bad_message(`something went wrong ${err.message}`)
+    }
 }
