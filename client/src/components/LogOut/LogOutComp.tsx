@@ -8,7 +8,6 @@ const backEndPort = import.meta.env.VITE_BACKEND_PORT
 const config = {
     headers: {'Content-Type': 'application/json'},
 };
-console.log(backEndPort)
 
 export default function LogOutComp() {
     const userInfo = useAppSelector((state) => state.user)
@@ -25,17 +24,16 @@ export default function LogOutComp() {
             }
         })
         .catch((error) => {
-            console.error('Error:', error);
+            console.error('Error:', error.message);
+            alert(error.message)
         });
     }, [])
 
     useEffect(() => {
         if (userInfo.loggedIn === 'yes') {
-            // console.log(userInfo, typeof log_this_user_out)
             log_this_user_out()
         } else {
-            // send them man back to the home page
-            navigate('/')
+            navigate('/') // send them man back to the home page
         }
     }, [])
 
