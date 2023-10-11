@@ -20,7 +20,9 @@ export default function LogOutComp() {
             if (res.data.msg === 'okay') {
                 localStorage.removeItem('userDts') // delete the localStorage cached user info
                 dispatch(updateUser({loggedIn:'no', name:'', session_fid:0})) // delete the redux item
-                navigate('/') // navigate back to home page
+
+                // setTimeout allows redux to finish updating before we redirect to the homePage
+                setTimeout(() => { navigate('/') }, 500)
             }
         })
         .catch((error) => {
