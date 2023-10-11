@@ -1,10 +1,15 @@
-import {useState} from "react";
+import axios from 'axios';
+import {useLayoutEffect, useState} from "react";
 import {useForm, SubmitHandler} from "react-hook-form"
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios';
-import './LoginComp..scss'
-import MessageComp, {MessageCompProps} from "../Message/MessageComp";
+import { useAppDispatch, useAppSelector } from "../../redux/hook";
+import { updateUser } from '../../redux/userSlice';
 
+import Header from '../Header/Header';
+import MessageComp, {MessageCompProps} from "../Message/MessageComp";
+import './LoginComp..scss'
+
+// gets the backEnd url from our .env file
 const backEndPort = import.meta.env.VITE_BACKEND_PORT;
 
 type LoginForRHF = {
@@ -23,22 +28,28 @@ type RegisterRHF = {
 
 export default function LoginComp() {
     const navigate = useNavigate();
-    const [isLoading1, setIsLoading1] = useState<boolean>(false)
-    const [isLoading2, setIsLoading2] = useState<boolean>(false)
+    const dispatch = useAppDispatch()
+    const userInfo = useAppSelector(state => state.user)
+    const [isLoading1, setIsLoading1] = useState<boolean>(false) // used for login
+    const [isLoading2, setIsLoading2] = useState<boolean>(false) // used for registering
     const [showAlert, setShowAlert] = useState<boolean>(false)
     const [alertMsg, setAlertMsg] = useState<MessageCompProps>({msg_type:'', msg_dts:''})
 
+    // setting up React Hook Form to handle the forms below(i.e both the login and registration forms)
     const { register: registerLogin, handleSubmit: handleLogin, setValue: loginSetValue, formState: {errors:loginError} } = useForm<LoginForRHF>()
     const { register: registerReg, handleSubmit: handleRegister, setValue: regSetValue, formState: {errors:regError} } = useForm<RegisterRHF>()
 
     const submitLogin: SubmitHandler<LoginForRHF> = (data) => {
         axios.post(`${backEndPort}/users/login`, data, {headers: {'Content-Type': 'application/json'}})
         .then((res) => {
-            console.log(res.data)
-
             if(res.data.msg === 'okay') {
                 localStorage.setItem('userDts', JSON.stringify(res.data));
-                navigate('/')
+                dispatch(updateUser({loggedIn: 'yes', ...res.data}))
+
+                // waits a little bit so that redux can finish it's thing and they i can redirect to the home page
+                setTimeout(() => {
+                    navigate('/')
+                }, 500)
 
                 // clears all of the input field for login
                 Object.keys(data).forEach((item) => {
@@ -78,8 +89,18 @@ export default function LoginComp() {
         });
     }
 
+    // checks to make sure that the user is not already logged in and still trying to access this route
+    useLayoutEffect(() => {
+        if (userInfo.loggedIn === 'yes') {
+            navigate('/')
+        }
+    }, [userInfo, navigate])
+
     return (
         <div className="block relative my-14 padding-x">
+            <div className="hidden">
+                <Header />
+            </div>
             {showAlert && <MessageComp {...alertMsg} closeAlert={setShowAlert} />}
 
             <div className="pb-10 text-4xl">Hi there! Welcome to TodoM</div>

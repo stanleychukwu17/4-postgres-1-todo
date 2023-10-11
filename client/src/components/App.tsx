@@ -1,7 +1,7 @@
 import { useAppSelector } from "../redux/hook"
 import HomeComp from "./Home/HomeComp"
 
-// import Header from "./Header/Header"
+import Header from "./Header/Header"
 import ProfileComp from "./Profile/ProfileComp"
 
 export default function App() {
@@ -9,7 +9,7 @@ export default function App() {
 
     return (
         <div className="">
-            {/* <Header must_be_logged_in={true} /> */}
+            <Header must_be_logged_in={true} />
             <div className="">
                 {loggedIn === 'no' && <HomeComp />}
                 {loggedIn === 'yes' && <ProfileComp />}

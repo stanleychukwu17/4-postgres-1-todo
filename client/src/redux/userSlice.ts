@@ -6,10 +6,7 @@ export type userDetailsType = {
     session_fid?:number;
     loggedIn?:'yes'|'no';
 }
-const initialState: userDetailsType = {
-    name: 'stanley',
-    loggedIn: 'no'
-};
+const initialState: userDetailsType = {name: '', loggedIn: 'no'};
 
 // Create a slice
 const userSlice = createSlice({

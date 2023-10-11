@@ -23,7 +23,7 @@ if (cached_user_dts) {
 
 
 type headerProps = {
-    must_be_logged_in: boolean
+    must_be_logged_in?: boolean
 }
 export default function Header(props: headerProps) {
     const userInfo = useAppSelector(state => state.user)

@@ -27,19 +27,18 @@ export default function LogOutComp() {
             console.error('Error:', error.message);
             alert(error.message)
         });
-    }, [])
+    }, [dispatch, navigate, userInfo])
 
+    // checks to make sure that the user is logged in
     useEffect(() => {
         if (userInfo.loggedIn === 'yes') {
             log_this_user_out()
         } else {
             navigate('/') // send them man back to the home page
         }
-    }, [])
+    }, [log_this_user_out, userInfo.loggedIn, navigate])
 
     return (
-        <div>
-
-        </div>
+        <div> </div>
     )
 }
