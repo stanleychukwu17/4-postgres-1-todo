@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import App from './components/App.tsx'
 import ErrorComp from './components/PageNotFound/PageNotFound.tsx'
 import LoginComp from "./components/LoginComp/LoginComp.tsx"
+import LogOutComp from './components/LogOut/LogOutComp.tsx';
 import './index.css'
 //--end--
 
@@ -23,7 +24,7 @@ const router = createBrowserRouter([
     },
     {path: "/login", element: <LoginComp />, },
     {path: "/register", element: <LoginComp />, },
-    {path: "/logout", element: <LoginComp />, },
+    {path: "/logout", element: <LogOutComp />, },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

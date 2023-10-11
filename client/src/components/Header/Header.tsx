@@ -30,7 +30,7 @@ export default function Header(props: headerProps) {
     const reduxDispatch = useAppDispatch()
     const navigate = useNavigate()
 
-    console.log(userInfo, 'i1', userDts)
+    // console.log(userInfo, 'i1', userDts)
     useLayoutEffect(() => {
         if (userDts.loggedIn === 'yes' && userInfo.loggedIn === 'no') {
             reduxDispatch(updateUser(userDts))
