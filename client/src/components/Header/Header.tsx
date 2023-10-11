@@ -1,8 +1,11 @@
 import { useLayoutEffect } from "react";
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 import { useAppSelector, useAppDispatch } from "../../redux/hook";
 import { updateUser, userDetailsType } from "../../redux/userSlice";
+
+import LoggedInCard from "./LoggedInCard";
+import LoggedOutCard from "./LoggedOutCard";
 
 
 // let the coding begin
@@ -18,31 +21,6 @@ if (cached_user_dts) {
 }
 
 
-
-const Reg_and_Login = () => {
-    return (
-        <div className="flex space-x-8 font-semibold text-[16.5px]">
-            <div className="">
-                <Link to="/register">Register</Link>
-            </div>
-            <div className="">
-                <Link to="/login">Login</Link>
-            </div>
-        </div>
-    )
-}
-
-const User_mini_profile = () => {
-    return (
-        <div className="">
-            <div className=""></div>
-            <div className="">
-                <div className="">Stanley Edward</div>
-                <div className=""></div>
-            </div>
-        </div>
-    )
-}
 
 type headerProps = {
     must_be_logged_in: boolean
@@ -61,7 +39,7 @@ export default function Header(props: headerProps) {
         if (props.must_be_logged_in === true) {
             // navigate('/login')
         }
-    }, [navigate, props.must_be_logged_in])
+    }, [navigate, props.must_be_logged_in, reduxDispatch, userInfo.loggedIn])
 
 
     return (
@@ -79,8 +57,8 @@ export default function Header(props: headerProps) {
                 </div>
             </div>
             
-            {userInfo.loggedIn === 'no' && <Reg_and_Login />}
-            {userInfo.loggedIn === 'yes' && <User_mini_profile />}
+            {userInfo.loggedIn === 'no' && <LoggedOutCard />}
+            {userInfo.loggedIn === 'yes' && <LoggedInCard />}
             
         </header>
     )
