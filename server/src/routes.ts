@@ -32,6 +32,10 @@ const routes = (app: Express) => {
     //--END--
 
     //--START-- routes for todo and everything that has to do with the todo
+    app.post('/todo/new_todo', async (req: Request, res: Response) => {
+        res.json({'msg':'doings'})
+    })
+    //--END--
 }
 
 export default routes

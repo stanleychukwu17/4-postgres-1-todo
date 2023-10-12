@@ -135,7 +135,6 @@ export async function logout_this_user (userInfo: {session_fid: number; refresh_
     try {
         // get the session info and be sure that the session is active
         const qUser = await pool.query("SELECT id FROM users_session WHERE fake_id = $1 and active = 'yes' limit 1", [Number(session_fid)])
-        console.log(qUser.rows[0])
         if (qUser.rows.length <= 0) {
             return show_bad_message('Please, the details provided is not valid')
         }
