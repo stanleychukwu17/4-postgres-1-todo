@@ -27,7 +27,7 @@ async function deserializeUser(req: Request, res: Response, next: NextFunction) 
         }
     
         // get the session details and makes sure the session is active
-        const session_dts = await get_this_session_details(session_fid as unknown as number, 'no')
+        const session_dts = await get_this_session_details(session_fid as unknown as number)
         const user_id = session_dts.user_id
     
         // For a valid access token
@@ -38,39 +38,29 @@ async function deserializeUser(req: Request, res: Response, next: NextFunction) 
         }
     }
 
-    // expired but valid refresh token
-    // FAILED: uncomment the below
-    // const { payload: refresh } = expired && refreshToken ? verifyJWT(refreshToken as string) : { payload: null };
-    // if (!refresh) {
-    //     return next();
-    // }
-
-
-    // FAILED: delete the below
-    const { payload: refresh } = verifyJWT(refreshToken as string)
-
-    // @ts-ignore
-    const session = await get_this_session_details(refresh.session_fid as unknown as number)
-    if (session.num_rows <= 0 || session.user_id <= 0) {
+    // expired accessToken, but user has a valid refreshToken
+    const { payload: refresh } = expired && refreshToken ? verifyJWT(refreshToken as string) : { payload: null };
+    if (!refresh) {
         return next();
     }
 
-    // NOTE:
-    // if payload has expired, then create new access token and let the return know that there is a new access token
+    // @ts-ignore
+    const session = await get_this_session_details(refresh.session_fid as unknown as number)
+    const user_id = session.user_id
+    if (session.num_rows <= 0 || user_id <= 0) {
+        return next();
+    }
 
-    console.log(process.env.JWT_TIME_2 as string)
-    return next();
+
     // creates a new access token
-    const newAccessToken = signJWT(session, process.env.JWT_TIME_1 as string);
+    const newAccessToken = signJWT({session_fid}, process.env.JWT_TIME_1 as string);
 
     // gets the user information from the new access token created
     const user = verifyJWT(newAccessToken).payload;
+    const loggedInDts = {session_fid, user_id, new_token:'yes', newAccessToken}
 
     // @ts-ignore
-    user.accessToken = newAccessToken
-
-    // @ts-ignore
-    req.user = user;
+    req.loggedInDts = loggedInDts;
 
     return next();
 }
