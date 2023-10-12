@@ -20,39 +20,46 @@ async function deserializeUser(req: Request, res: Response, next: NextFunction) 
     const { payload, expired } = verifyJWT(accessToken as string);
 
     // the session_fid received from the request should be the same as the one from the payload
-    //@ts-ignore
-    if (payload.session_fid != session_fid) {
-        return next()
+    if (expired === false) {
+        //@ts-ignore
+        if (payload.session_fid != session_fid) {
+            return next()
+        }
+    
+        // get the session details and makes sure the session is active
+        const session_dts = await get_this_session_details(session_fid as unknown as number, 'no')
+        const user_id = session_dts.user_id
+    
+        // For a valid access token
+        if (payload && user_id > 0) {
+            // @ts-ignore
+            req.loggedInDts = {session_fid, user_id}
+            return next()
+        }
     }
 
-    const session_dts = await get_this_session_details(session_fid as unknown as number)
-    console.log(session_dts)
-    return next()
-    // use the session_fid to return the user id only if the accessToken is active
-    // add the info returned to the req.loggedInDts
-    // if payload has expired, then create new access token and let the return know that there is a new access token
+    // expired but valid refresh token
+    // FAILED: uncomment the below
+    // const { payload: refresh } = expired && refreshToken ? verifyJWT(refreshToken as string) : { payload: null };
+    // if (!refresh) {
+    //     return next();
+    // }
 
-    // For a valid access token
-    if (payload) {
-        // @ts-ignore
-        req.user = payload;
-        return next();
-    }
 
-    // expired but valid access token
-    const { payload: refresh } = expired && refreshToken ? verifyJWT(refreshToken as string) : { payload: null };
-
-    if (!refresh) {
-        return next();
-    }
+    // FAILED: delete the below
+    const { payload: refresh } = verifyJWT(refreshToken as string)
 
     // @ts-ignore
-    const session = getSession(refresh.sessionId);
-
-    if (!session) {
+    const session = await get_this_session_details(refresh.session_fid as unknown as number)
+    if (session.num_rows <= 0 || session.user_id <= 0) {
         return next();
     }
 
+    // NOTE:
+    // if payload has expired, then create new access token and let the return know that there is a new access token
+
+    console.log(process.env.JWT_TIME_2 as string)
+    return next();
     // creates a new access token
     const newAccessToken = signJWT(session, process.env.JWT_TIME_1 as string);
 

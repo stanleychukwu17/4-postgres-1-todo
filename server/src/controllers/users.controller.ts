@@ -29,8 +29,8 @@ async function createSession (user_id:number) {
     return {...good_msg, "session_fid":new_fake_id}
 }
 
-export async function get_this_session_details(session_fid: number) {
-    const qDts = await pool.query("SELECT user_id from users_session where fake_id = $1 limit 1", [session_fid])
+export async function get_this_session_details(session_fid: number, active: 'yes'|'no' = 'yes') {
+    const qDts = await pool.query(`SELECT user_id from users_session where fake_id = $1 and active = $2 limit 1`, [session_fid, active])
     const num_rows = qDts.rows.length
     const ret = {num_rows, user_id:0}
 
@@ -132,8 +132,8 @@ export async function login_this_user (userInfo: userLoginInfo) {
 
     // create access and refresh tokens
     const payload = {session_fid: session_fid}
-    const accessToken = signJWT(payload, "7d");
-    const refreshToken = signJWT({session_fid}, "1y");
+    const accessToken = signJWT(payload, process.env.JWT_TIME_1 as string);
+    const refreshToken = signJWT({session_fid}, process.env.JWT_TIME_2 as string);
 
     const done = show_good_message()
     const dts = {name, session_fid, refreshToken, accessToken}
