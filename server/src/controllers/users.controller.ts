@@ -29,6 +29,17 @@ async function createSession (user_id:number) {
     return {...good_msg, "session_fid":new_fake_id}
 }
 
+export async function get_this_session_details(session_fid: number) {
+    const qDts = await pool.query("SELECT user_id from users_session where fake_id = $1 limit 1", [session_fid])
+    const num_rows = qDts.rows.length
+    const ret = {num_rows, user_id:0}
+
+    if (num_rows > 0) {
+        ret.user_id = qDts.rows[0].user_id
+    }
+    return ret
+}
+
 export async function register_a_new_user(userInfo:userRegisterInfo) {
     const {name, username, email, password, gender} = userInfo;
     const checks_array = [name, username, email, password, gender] // want to make sure all fields are not less than zero

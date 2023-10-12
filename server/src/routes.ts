@@ -33,8 +33,8 @@ const routes = (app: Express) => {
 
     //--START-- routes for todo and everything that has to do with the todo
     app.post('/todo/new_todo', async (req: Request, res: Response) => {
-        console.log(req.body)
-        res.json({'msg':'doings', ...req.body})
+        // console.log(req.body)
+        res.json({'msg':'doings', 'time':new Date().getSeconds()})
     })
     //--END--
 }
