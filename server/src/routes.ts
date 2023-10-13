@@ -35,9 +35,9 @@ const routes = (app: Express) => {
 
     //--START-- routes for todo and everything that has to do with the todo
     app.post('/todo/new_todo', requireUser, async (req: Request, res: Response) => {
-        // @ts-ignore
         // console.log(req.body)
-        const newTodo = add_a_new_item_to_this_user_todoList()
+        //@ts-ignore
+        const newTodo = await add_a_new_item_to_this_user_todoList({user_id:req.loggedInDts.user_id, details:req.body.details})
         res.json(newTodo)
     })
     //--END--
