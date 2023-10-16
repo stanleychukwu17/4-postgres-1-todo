@@ -1,69 +1,63 @@
-import {BsTrash} from 'react-icons/bs'
-import {FaPencilAlt} from 'react-icons/fa'
+import axios from 'axios';
+import { useCallback, useEffect, useState } from 'react';
 import {FiChevronsDown} from 'react-icons/fi'
+import { useAppSelector } from '../../redux/hook';
 
+//--START-- importing of components
 import Header from "../Header/Header";
-import { InputComponent } from './ProfileMini';
+import { EachTodoItemComp, InputComponent } from './ProfileMini';
+
+//--START-- importing of stylesheets
 import './Profile.scss'
 
+//--START-- importing of types
+import {todoItemsProps} from './ProfileMini'
+
+// gets the backEnd url from our .env file
+const backEndPort = import.meta.env.VITE_BACKEND_PORT;
+
+
+
+
+
 export default function ProfileComp() {
+    const userInfo = useAppSelector(state => state.user)
+    const [items, setItems] = useState<todoItemsProps[]|null>(null)
+
+    const fetch_all_the_items_in_this_user_todo_list = useCallback(() => {
+        axios.post(`${backEndPort}/todo/all_my_items`, userInfo, {headers: {'Content-Type': 'application/json'}})
+        .then((res) => {
+            console.log(res.data)
+
+            if (res.data.msg === 'okay') {
+                setItems(res.data.items)
+            }
+        })
+        .catch()
+    }, [userInfo])
+
+    useEffect(() => {
+        fetch_all_the_items_in_this_user_todo_list()
+    }, [])
+
     return (
         <div className="profile_Cvr1">
             <Header />
             <div className="padding-x flex">
-                <div className="w-[60%]">
+                <div className="w-[65%]">
+                    {/* THE INPUT COMPONENT FOR ADDING A NEW ITEM TO THE TODO LIST */}
                     <InputComponent />
+
                     <div className="">
                         <div className="p-6 bg-[#f5f6fa] font-semibold"><h2>Get busy</h2></div>
+
+                        {/* EACH OF THE TODO ITEMS */}
                         <div className="">
-                            <div className="todoEch flex py-5">
-                                <div className="flex space-x-3 items-center mr-4 w-[80px]">
-                                    <div className="icons"><FaPencilAlt /></div>
-                                    <div className="icons"><BsTrash /></div>
-                                </div>
-                                <div className="">
-                                    <div className="">Take out the trash and call Mr ade to come and fix all the fans down stairs tomorrow morning, Take out the trash and call Mr ade to come and fix all the fans down stairs tomorrow morning</div>
-                                    <div className="text-xs font-semibold text-[#a4b0be] mt-2">Added 20mins ago</div>
-                                </div>
-                            </div>
-
-                            <div className="todoEch flex py-5">
-                                <div className="flex space-x-3 items-center mr-4 w-[80px]">
-                                    <div className="icons"><FaPencilAlt /></div>
-                                    <div className="icons"><BsTrash /></div>
-                                </div>
-                                <div className="">
-                                    <div className="">Take out the trash and call Mr ade to come and fix all the fans down stairs tomorrow morning</div>
-                                    <div className="text-xs font-semibold text-[#a4b0be] mt-2">Added 20mins ago</div>
-                                </div>
-                            </div>
-
-                            <div className="todoEch flex py-5">
-                                <div className="flex space-x-3 items-center mr-4 w-[80px]">
-                                    <div className="icons"><FaPencilAlt /></div>
-                                    <div className="icons"><BsTrash /></div>
-                                </div>
-                                <div className="">
-                                    <div className="">Take out the trash and call Mr ade to come and fix all the fans down stairs tomorrow morning</div>
-                                    <div className="text-xs font-semibold text-[#a4b0be] mt-2">Added 20mins ago</div>
-                                </div>
-                            </div>
-
-                            <div className="todoEch flex py-5">
-                                <div className="flex space-x-3 items-center mr-4 w-[80px]">
-                                    <div className="icons"><FaPencilAlt /></div>
-                                    <div className="icons"><BsTrash /></div>
-                                </div>
-                                <div className="">
-                                    <div className="">Take out the trash and call Mr ade to come and fix all the fans down stairs tomorrow morning</div>
-                                    <div className="text-xs font-semibold text-[#a4b0be] mt-2">Added 20mins ago</div>
-                                </div>
-                            </div>
-
+                            {items?.map((ech, index) => <EachTodoItemComp key={`todoItem-${index}`} {...ech} /> )}
                         </div>
-                    I</div>
+                    </div>
                 </div>
-                <div className="w-[35%] ml-[4%] flex justify-center text-center">
+                <div className="w-[35%] flex justify-center text-center">
                     <div className="mt-10">
                         <div className="w-[230px] h-[230px] bg-[#f5f6fa] rounded-full"></div>
                         <div className="py-5 pb-3 text-base">Stanley Chukwu</div>

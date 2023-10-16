@@ -5,10 +5,23 @@
         .icons {
             width: 30px;
             height: 30px;
-            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             font-size: 12px;
             border-radius: 100%;
             background-color: #f1f2f6;
+            cursor: pointer;
+            transition: all .5s ease-out;
+
+            &:hover {
+                background-color: #dfe4ea;
+                color: #000;
+            }
+
+            .checkEmpty {
+                font-size: 22px;
+            }
         }
     }
 }

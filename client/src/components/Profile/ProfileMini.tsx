@@ -1,10 +1,13 @@
 import axios from 'axios';
 import { useState } from 'react';
-import {BsFillCheckCircleFill} from 'react-icons/bs'
 import {useForm, SubmitHandler} from "react-hook-form"
 import { useAppSelector } from '../../redux/hook';
+import { motion, useAnimationControls } from 'framer-motion';
 
 import MessageComp, {MessageCompProps} from "../Message/MessageComp";
+
+import {BsFillCheckCircleFill, BsTrash, BsCheckCircle} from 'react-icons/bs'
+import {FaPencilAlt} from 'react-icons/fa'
 
 // gets the backEnd url from our .env file
 const backEndPort = import.meta.env.VITE_BACKEND_PORT;
@@ -51,20 +54,49 @@ export const InputComponent = () => {
             <div className="text-2xl"><h2>Add items to your todo list</h2></div>
             <form onSubmit={handleSubmit(add_item_to_todo_list)}>
                 <div className="py-4 flex">
-                        <input
-                            className="border border-[#f1f2f6] bg-[#fff] py-4 px-8 mr-5 w-[400px] rounded-full shadow-inner"
-                            type="text" placeholder="start adding items here..."
-                            {...registerTodo("details", { required: true })}
-                        />
-                        <button type="submit" className='text-4xl text-[#00a8ff] cursor-pointer outline-none'>
-                            <BsFillCheckCircleFill />
-                        </button>
+                    <input
+                        className="border border-[#f1f2f6] bg-[#fff] py-4 px-8 mr-5 w-[400px] rounded-full shadow-inner"
+                        type="text" placeholder="start adding items here..."
+                        {...registerTodo("details", { required: true })}
+                    />
+                    <button type="submit" className='text-4xl text-[#00a8ff] cursor-pointer outline-none'>
+                        <BsFillCheckCircleFill />
+                    </button>
                 </div>
             </form>
             <div className="">
                 {todoError.details && <p className='text-sm font-semibold text-[#df0e3a] ml-4'>Please fill in all the fields!!!</p>}
             </div>
             {showAlert && <MessageComp {...alertMsg} closeAlert={setShowAlert} />}
+        </div>
+    )
+}
+
+
+
+export type todoItemsProps = {
+    id: number,
+    details: string,
+    date_added: string
+}
+export const EachTodoItemComp = ({details}: todoItemsProps) => {
+    const animationControl = useAnimationControls()
+
+    return (
+        <div className="todoEch flex py-5">
+            <div className="flex space-x-3 items-center mr-4 w-[120px]">
+                <div className="icons"><FaPencilAlt /></div>
+                <div className="icons"><BsTrash /></div>
+                <motion.div className="icons">
+                    <span className='checkEmpty'>
+                        <BsCheckCircle />
+                    </span>
+                </motion.div>
+            </div>
+            <div className="">
+                <div className="">{details}</div>
+                <div className="text-xs font-semibold text-[#a4b0be] mt-2">Added 20mins ago</div>
+            </div>
         </div>
     )
 }
