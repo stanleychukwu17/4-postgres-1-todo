@@ -68,3 +68,9 @@ export async function add_a_new_item_to_this_user_todoList(todoInfo:newTodoProps
     const good_msg = show_good_message()
     return {...good_msg, ...todo_item};
 }
+
+// get all the todo items of the user_id received
+export async function get_all_of_this_user_todo_items({user_id, completed}: {user_id:number, completed: 'yes'|'no'}) {
+    const qItems = await pool.query("SELECT id, fake_id as fid, details, date_added from todo where user_id = $1 and completed = $2 order by rank desc ", [user_id, completed])
+    return {num_rows: qItems.rows.length, 'items': qItems.rows}
+}
