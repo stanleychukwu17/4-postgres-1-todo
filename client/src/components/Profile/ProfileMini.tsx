@@ -1,16 +1,21 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import {useForm, SubmitHandler} from "react-hook-form"
 import { useAppSelector } from '../../redux/hook';
 import { motion, useAnimationControls } from 'framer-motion';
-
-import MessageComp, {MessageCompProps} from "../Message/MessageComp";
-
 import {BsFillCheckCircleFill, BsTrash, BsCheckCircle} from 'react-icons/bs'
 import {FaPencilAlt} from 'react-icons/fa'
 
+import MessageComp, {MessageCompProps} from "../Message/MessageComp";
+
+import { spanVariant } from './profile.variants';
+
+
 // gets the backEnd url from our .env file
 const backEndPort = import.meta.env.VITE_BACKEND_PORT;
+
+
+
 
 type todo_item_input = {
     details: string
@@ -34,7 +39,7 @@ export const InputComponent = () => {
                 // dispatch(updateUser({loggedIn: 'yes', ...res.data}))
 
                 // clears all of the input field for login
-                // todoSetValue("details", "") // RHF hook used here
+                todoSetValue("details", "") // RHF hook used here
 
             } else {
                 setShowAlert(true)
@@ -45,7 +50,6 @@ export const InputComponent = () => {
         .catch((err) => {
             setShowAlert(true)
             setAlertMsg({'msg_type':'bad', 'msg_dts':err.message+', please contact the customer support and report this issue'})
-            // setIsLoading1(false)
         });
     }
 
@@ -76,21 +80,49 @@ export const InputComponent = () => {
 
 export type todoItemsProps = {
     id: number,
+    fid: number,
     details: string,
     date_added: string
 }
-export const EachTodoItemComp = ({details}: todoItemsProps) => {
-    const animationControl = useAnimationControls()
+export const EachTodoItemComp = ({id, fid, details}: todoItemsProps) => {
+    const spanControl = useAnimationControls()
+    const userInfo = useAppSelector(state => state.user)
+    const toSend = {...userInfo, id, fid}
+
+    // marking of the item to completed
+    const updateThisItemToCompleted = useCallback(() => {
+        axios.post(`${backEndPort}/todo/completed`, toSend, {headers: {'Content-Type': 'application/json'}})
+        .then((res) => {
+            console.log(res.data)
+            if(res.data.msg === 'okay') {
+                // dispatch(updateUser({loggedIn: 'yes', ...res.data}))
+
+                // clears all of the input field for login
+
+            } else {
+                alert(res.data.cause)
+            }
+        })
+    }, [])
+
+    // the two functions below are for animating the icon that allows user to mark the item as completed
+    const framerStartCheckAnimation = useCallback(() => {
+        spanControl.stop()
+        spanControl.start('animate')
+    }, [spanControl])
+    const framerEndCheckAnimation = useCallback(() => {
+        spanControl.stop()
+        spanControl.start('initial')
+    }, [spanControl])
 
     return (
         <div className="todoEch flex py-5">
             <div className="flex space-x-3 items-center mr-4 w-[120px]">
                 <div className="icons"><FaPencilAlt /></div>
                 <div className="icons"><BsTrash /></div>
-                <motion.div className="icons">
-                    <span className='checkEmpty'>
-                        <BsCheckCircle />
-                    </span>
+                <motion.div className="icons iconsNoFlex" onClick={updateThisItemToCompleted} onMouseEnter={framerStartCheckAnimation} onMouseLeave={framerEndCheckAnimation}>
+                    <motion.span className='checkEmpty' variants={spanVariant} animate={spanControl}><BsCheckCircle /></motion.span>
+                    <motion.span className='checkEmpty' variants={spanVariant} animate={spanControl}><BsFillCheckCircleFill /></motion.span>
                 </motion.div>
             </div>
             <div className="">
