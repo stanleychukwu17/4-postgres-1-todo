@@ -3,7 +3,9 @@ import {register_a_new_user, login_this_user, logout_this_user} from './controll
 import {log, errorLogger} from './logger/'
 import {show_bad_message, show_good_message } from "./functions/utils";
 import { requireUser } from "./middleware/requireUser";
-import { add_a_new_item_to_this_user_todoList, get_all_of_this_user_todo_items } from "./controllers/todo.controller";
+import {
+    add_a_new_item_to_this_user_todoList, get_all_of_this_user_todo_items, update_this_user_todo_item_to_completed
+} from "./controllers/todo.controller";
 
 const routes = (app: Express) => {
     // checks to see if our servers are running as they should
@@ -51,9 +53,8 @@ const routes = (app: Express) => {
     // updates a todo to completed
     app.post('/todo/completed', requireUser, async (req: Request, res: Response) => {
         // @ts-ignore
-        res.json('e dey okay')
-        // const allTodo = await get_all_of_this_user_todo_items({user_id:req.loggedInDts.user_id, completed:'no'})
-        // res.json({...show_good_message(), ...allTodo})
+        const allTodo = await update_this_user_todo_item_to_completed({user_id:req.loggedInDts.user_id, todo_id:req.body.id})
+        res.json(show_good_message())
     })
     //--END--
 }
