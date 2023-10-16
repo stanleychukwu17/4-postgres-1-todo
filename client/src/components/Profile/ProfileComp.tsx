@@ -23,6 +23,7 @@ const backEndPort = import.meta.env.VITE_BACKEND_PORT;
 export default function ProfileComp() {
     const userInfo = useAppSelector(state => state.user)
     const [items, setItems] = useState<todoItemsProps[]|null>(null)
+    const [reloadItems, setReloadItems] = useState<boolean>(true)
 
     const fetch_all_the_items_in_this_user_todo_list = useCallback(() => {
         axios.post(`${backEndPort}/todo/all_my_items`, userInfo, {headers: {'Content-Type': 'application/json'}})
@@ -31,14 +32,17 @@ export default function ProfileComp() {
 
             if (res.data.msg === 'okay') {
                 setItems(res.data.items)
+                setReloadItems(false)
             }
         })
         .catch()
     }, [userInfo])
 
     useEffect(() => {
-        fetch_all_the_items_in_this_user_todo_list()
-    }, [])
+        if (reloadItems) {
+            fetch_all_the_items_in_this_user_todo_list()
+        }
+    }, [reloadItems])
 
     return (
         <div className="profile_Cvr1">
@@ -53,7 +57,7 @@ export default function ProfileComp() {
 
                         {/* EACH OF THE TODO ITEMS */}
                         <div className="">
-                            {items?.map((ech, index) => <EachTodoItemComp key={`todoItem-${index}`} {...ech} /> )}
+                            {items?.map((ech, index) => <EachTodoItemComp key={`todoItem-${index}`} {...ech} setReloadItems={setReloadItems} /> )}
                         </div>
                     </div>
                 </div>

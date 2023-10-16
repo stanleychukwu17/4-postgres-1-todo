@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { useCallback, useState } from 'react';
+import { motion, useAnimationControls } from 'framer-motion';
 import {useForm, SubmitHandler} from "react-hook-form"
 import { useAppSelector } from '../../redux/hook';
-import { motion, useAnimationControls } from 'framer-motion';
 import {BsFillCheckCircleFill, BsTrash, BsCheckCircle} from 'react-icons/bs'
 import {FaPencilAlt} from 'react-icons/fa'
 
@@ -80,25 +80,26 @@ export const InputComponent = () => {
 
 export type todoItemsProps = {
     id: number,
-    fid: number,
     details: string,
     date_added: string
+} & {
+    setReloadItems: React.Dispatch<React.SetStateAction<boolean>>
 }
-export const EachTodoItemComp = ({id, fid, details}: todoItemsProps) => {
+export const EachTodoItemComp = ({id, details, setReloadItems}: todoItemsProps) => {
+    const boxControl = useAnimationControls()
     const spanControl = useAnimationControls()
     const userInfo = useAppSelector(state => state.user)
-    const toSend = {...userInfo, id, fid}
 
     // marking of the item to completed
     const updateThisItemToCompleted = useCallback(() => {
-        axios.post(`${backEndPort}/todo/completed`, toSend, {headers: {'Content-Type': 'application/json'}})
+        // hides the item first and then sends the request to update item to completed
+        // gsap.to(document.getElementById(randomId), })
+        boxControl.start({height:0, padding:0, overflow: 'hidden', opacity:0})
+
+        axios.post(`${backEndPort}/todo/completed`, {...userInfo, id}, {headers: {'Content-Type': 'application/json'}})
         .then((res) => {
-            console.log(res.data)
             if(res.data.msg === 'okay') {
-                // dispatch(updateUser({loggedIn: 'yes', ...res.data}))
-
-                // clears all of the input field for login
-
+                setReloadItems(true)
             } else {
                 alert(res.data.cause)
             }
@@ -116,7 +117,7 @@ export const EachTodoItemComp = ({id, fid, details}: todoItemsProps) => {
     }, [spanControl])
 
     return (
-        <div className="todoEch flex py-5">
+        <motion.div className="todoEch flex py-5" animate={boxControl}>
             <div className="flex space-x-3 items-center mr-4 w-[120px]">
                 <div className="icons"><FaPencilAlt /></div>
                 <div className="icons"><BsTrash /></div>
@@ -129,6 +130,6 @@ export const EachTodoItemComp = ({id, fid, details}: todoItemsProps) => {
                 <div className="">{details}</div>
                 <div className="text-xs font-semibold text-[#a4b0be] mt-2">Added 20mins ago</div>
             </div>
-        </div>
+        </motion.div>
     )
 }
