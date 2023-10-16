@@ -23,26 +23,32 @@ const backEndPort = import.meta.env.VITE_BACKEND_PORT;
 export default function ProfileComp() {
     const userInfo = useAppSelector(state => state.user)
     const [items, setItems] = useState<todoItemsProps[]|null>(null)
-    const [reloadItems, setReloadItems] = useState<boolean>(true)
+
+    // for deleting an item from the list of todo items
+    const remove_this_item_from_list_of_items = (id:number) => {
+        const newItem: todoItemsProps[] = []
+
+        items?.forEach(eachItem => {
+            if (eachItem.id != id) {
+                newItem.push(eachItem)
+            }
+        })
+
+        setItems(newItem)
+    }
 
     const fetch_all_the_items_in_this_user_todo_list = useCallback(() => {
         axios.post(`${backEndPort}/todo/all_my_items`, userInfo, {headers: {'Content-Type': 'application/json'}})
         .then((res) => {
-            console.log(res.data)
-
             if (res.data.msg === 'okay') {
                 setItems(res.data.items)
-                setReloadItems(false)
             }
         })
-        .catch()
     }, [userInfo])
 
     useEffect(() => {
-        if (reloadItems) {
-            fetch_all_the_items_in_this_user_todo_list()
-        }
-    }, [reloadItems])
+        fetch_all_the_items_in_this_user_todo_list()
+    }, [])
 
     return (
         <div className="profile_Cvr1">
@@ -57,7 +63,7 @@ export default function ProfileComp() {
 
                         {/* EACH OF THE TODO ITEMS */}
                         <div className="">
-                            {items?.map((ech, index) => <EachTodoItemComp key={`todoItem-${index}`} {...ech} setReloadItems={setReloadItems} /> )}
+                            {items && items.map((ech, index) => <EachTodoItemComp key={`todoItem-${index}`} {...ech} removeFunction={remove_this_item_from_list_of_items} /> )}
                         </div>
                     </div>
                 </div>

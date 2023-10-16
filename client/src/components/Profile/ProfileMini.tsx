@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useRef } from 'react';
 import { motion, useAnimationControls } from 'framer-motion';
 import {useForm, SubmitHandler} from "react-hook-form"
 import { useAppSelector } from '../../redux/hook';
@@ -83,28 +83,24 @@ export type todoItemsProps = {
     details: string,
     date_added: string
 } & {
-    setReloadItems: React.Dispatch<React.SetStateAction<boolean>>
+    removeFunction: (id:number) => void
 }
-export const EachTodoItemComp = ({id, details, setReloadItems}: todoItemsProps) => {
-    const boxControl = useAnimationControls()
+export const EachTodoItemComp = ({id, details, removeFunction}: todoItemsProps) => {
+    const boxRef = useRef<HTMLDivElement>({} as HTMLDivElement)
     const spanControl = useAnimationControls()
     const userInfo = useAppSelector(state => state.user)
 
     // marking of the item to completed
-    const updateThisItemToCompleted = useCallback(() => {
-        // hides the item first and then sends the request to update item to completed
-        // gsap.to(document.getElementById(randomId), })
-        boxControl.start({height:0, padding:0, overflow: 'hidden', opacity:0})
+    const updateThisItemToCompleted = () => {
+        removeFunction(id) // removes the item from the todo items
 
         axios.post(`${backEndPort}/todo/completed`, {...userInfo, id}, {headers: {'Content-Type': 'application/json'}})
         .then((res) => {
-            if(res.data.msg === 'okay') {
-                setReloadItems(true)
-            } else {
+            if(res.data.msg != 'okay') {
                 alert(res.data.cause)
             }
         })
-    }, [])
+    }
 
     // the two functions below are for animating the icon that allows user to mark the item as completed
     const framerStartCheckAnimation = useCallback(() => {
@@ -117,7 +113,7 @@ export const EachTodoItemComp = ({id, details, setReloadItems}: todoItemsProps) 
     }, [spanControl])
 
     return (
-        <motion.div className="todoEch flex py-5" animate={boxControl}>
+        <motion.div className="todoEch flex py-5" ref={boxRef}>
             <div className="flex space-x-3 items-center mr-4 w-[120px]">
                 <div className="icons"><FaPencilAlt /></div>
                 <div className="icons"><BsTrash /></div>
