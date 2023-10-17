@@ -98,22 +98,34 @@ export const EachTodoItemComp = ({id, details, removeFunction}: todoItemsProps) 
 
         axios.post(`${backEndPort}/todo/completed`, {...userInfo, id}, {headers: {'Content-Type': 'application/json'}})
         .then((res) => {
+            setShowEdit(false);
+            if (res.data.msg != 'okay') alert(res.data.cause);
+        })
+    }
+
+    // updates the details of an item in the list
+    const updateTheDetailsOfThisItem = useCallback((newDts: string) => {
+        axios.put(`${backEndPort}/todo/update_item`, {...userInfo, id, newDts}, {headers: {'Content-Type': 'application/json'}})
+        .then((res) => {
             if(res.data.msg != 'okay') {
                 alert(res.data.cause)
             }
         })
-    }
+    }, [userInfo, id])
 
-    const updateTheDetailsOfThisItem = useCallback((newDts: string) => {
-        console.log(newDts)
-        axios.put(`${backEndPort}/todo/update_item`, {...userInfo, id}, {headers: {'Content-Type': 'application/json'}})
+    // updates 
+    const deleteThisItemFromThisList = useCallback(() => {
+        removeFunction(id) // removes the item from the todo items
+
+        axios.post(`${backEndPort}/todo/delete_item`, {...userInfo, id}, {headers: {'Content-Type': 'application/json'}})
         .then((res) => {
-            console.log(res.data)
-            // if(res.data.msg != 'okay') {
-            //     alert(res.data.cause)
-            // }
+            console.log(res.data.cause)
+            if(res.data.msg != 'okay') {
+                alert(res.data.cause)
+            }
         })
-    }, [])
+    }, [userInfo, id])
+
 
     // the two functions below are for animating the icon that allows user to mark the item as completed
     const framerStartCheckAnimation = useCallback(() => {
@@ -129,7 +141,7 @@ export const EachTodoItemComp = ({id, details, removeFunction}: todoItemsProps) 
         <motion.div className="todoEch flex py-5" ref={boxRef}>
             <div className="flex space-x-3 items-center mr-4 w-[120px]">
                 <div className="icons" onClick={() => { setShowEdit(true) }}><FaPencilAlt /></div>
-                <div className="icons"><BsTrash /></div>
+                <div className="icons" onClick={() => { deleteThisItemFromThisList() }}><BsTrash /></div>
                 <motion.div className="icons iconsNoFlex" onClick={updateThisItemToCompleted} onMouseEnter={framerStartCheckAnimation} onMouseLeave={framerEndCheckAnimation}>
                     <motion.span className='checkEmpty' variants={spanVariant} animate={spanControl}><BsCheckCircle /></motion.span>
                     <motion.span className='checkEmpty' variants={spanVariant} animate={spanControl}><BsFillCheckCircleFill /></motion.span>
