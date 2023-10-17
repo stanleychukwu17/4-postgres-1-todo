@@ -71,13 +71,18 @@ export async function add_a_new_item_to_this_user_todoList(todoInfo:newTodoProps
 
 // get all the todo items of the user_id received
 export async function get_all_of_this_user_todo_items({user_id, completed}: {user_id:number, completed: 'yes'|'no'}) {
-    const qItems = await pool.query("SELECT id, fake_id as fid, details, date_added from todo where user_id = $1 and completed = $2 order by rank desc ", [user_id, completed])
+    const qItems = await pool.query("SELECT id, fake_id as fid, details, date_added from todo where user_id = $1 and completed = $2 order by rank desc", [user_id, completed])
     return {num_rows: qItems.rows.length, 'items': qItems.rows}
 }
 
-// get all the todo items of the user_id received
+// updates a todo to completed
 export async function update_this_user_todo_item_to_completed({user_id, todo_id}: {user_id:number, todo_id:number}) {
-    // const qIte = await pool.query("UPDATE todo set completed = 'no' where id > 0")
-    const qItems = await pool.query("UPDATE todo set completed = 'yes' where id = $1 and user_id = $2 ", [todo_id, user_id])
+    const qItems = await pool.query("UPDATE todo set completed = 'yes' where id = $1 and user_id = $2", [todo_id, user_id])
+    return show_good_message()
+}
+
+// updates an edited item in the list
+export async function update_this_item_item_with_new_details({user_id, todo_id, newDts}: {user_id:number, todo_id:number, newDts:string}) {
+    const qItems = await pool.query("UPDATE todo set details = $3 where id = $1 and user_id = $2", [todo_id, user_id, newDts])
     return show_good_message()
 }

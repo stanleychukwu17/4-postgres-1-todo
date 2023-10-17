@@ -4,7 +4,7 @@ import {log, errorLogger} from './logger/'
 import {show_bad_message, show_good_message } from "./functions/utils";
 import { requireUser } from "./middleware/requireUser";
 import {
-    add_a_new_item_to_this_user_todoList, get_all_of_this_user_todo_items, update_this_user_todo_item_to_completed
+    add_a_new_item_to_this_user_todoList, get_all_of_this_user_todo_items, update_this_user_todo_item_to_completed, update_this_item_item_with_new_details
 } from "./controllers/todo.controller";
 
 const routes = (app: Express) => {
@@ -54,6 +54,13 @@ const routes = (app: Express) => {
     app.post('/todo/completed', requireUser, async (req: Request, res: Response) => {
         // @ts-ignore
         const allTodo = await update_this_user_todo_item_to_completed({user_id:req.loggedInDts.user_id, todo_id:req.body.id})
+        res.json(show_good_message())
+    })
+
+    // updates an edited item in the list
+    app.put('/todo/update_item', requireUser, async (req: Request, res: Response) => {
+        //@ts-ignore
+        const allTodo = await update_this_item_item_with_new_details({user_id:req.loggedInDts.user_id, todo_id:req.body.id, newDts:req.body.newDts})
         res.json(show_good_message())
     })
     //--END--
