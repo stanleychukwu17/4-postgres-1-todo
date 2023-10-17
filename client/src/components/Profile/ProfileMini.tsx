@@ -111,7 +111,7 @@ export const EachTodoItemComp = ({id, details, removeFunction}: todoItemsProps) 
                 alert(res.data.cause)
             }
         })
-    }, [userInfo, id])
+    }, [])
 
     // updates 
     const deleteThisItemFromThisList = useCallback(() => {
@@ -119,12 +119,11 @@ export const EachTodoItemComp = ({id, details, removeFunction}: todoItemsProps) 
 
         axios.post(`${backEndPort}/todo/delete_item`, {...userInfo, id}, {headers: {'Content-Type': 'application/json'}})
         .then((res) => {
-            console.log(res.data.cause)
             if(res.data.msg != 'okay') {
                 alert(res.data.cause)
             }
         })
-    }, [userInfo, id])
+    }, [])
 
 
     // the two functions below are for animating the icon that allows user to mark the item as completed
