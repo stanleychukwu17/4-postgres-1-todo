@@ -86,3 +86,9 @@ export async function update_this_item_item_with_new_details({user_id, todo_id, 
     const qItems = await pool.query("UPDATE todo set details = $3 where id = $1 and user_id = $2", [todo_id, user_id, newDts])
     return show_good_message()
 }
+
+// deletes an item from the list
+export async function delete_this_item_from_the_todo_list({user_id, todo_id}: {user_id:number, todo_id:number}) {
+    const qItems = await pool.query("DELETE FROM todo WHERE id = $1 and user_id = $2", [todo_id, user_id])
+    return show_good_message()
+}
