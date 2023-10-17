@@ -86,6 +86,8 @@ export type todoItemsProps = {
     removeFunction: (id:number) => void
 }
 export const EachTodoItemComp = ({id, details, removeFunction}: todoItemsProps) => {
+    const [note, setNote] = useState(details)
+    const [showEdit, setShowEdit] = useState<boolean>(false)
     const boxRef = useRef<HTMLDivElement>({} as HTMLDivElement)
     const spanControl = useAnimationControls()
     const userInfo = useAppSelector(state => state.user)
@@ -102,6 +104,17 @@ export const EachTodoItemComp = ({id, details, removeFunction}: todoItemsProps) 
         })
     }
 
+    const updateTheDetailsOfThisItem = useCallback((newDts: string) => {
+        console.log(newDts)
+        axios.put(`${backEndPort}/todo/update_item`, {...userInfo, id}, {headers: {'Content-Type': 'application/json'}})
+        .then((res) => {
+            console.log(res.data)
+            // if(res.data.msg != 'okay') {
+            //     alert(res.data.cause)
+            // }
+        })
+    }, [])
+
     // the two functions below are for animating the icon that allows user to mark the item as completed
     const framerStartCheckAnimation = useCallback(() => {
         spanControl.stop()
@@ -115,7 +128,7 @@ export const EachTodoItemComp = ({id, details, removeFunction}: todoItemsProps) 
     return (
         <motion.div className="todoEch flex py-5" ref={boxRef}>
             <div className="flex space-x-3 items-center mr-4 w-[120px]">
-                <div className="icons"><FaPencilAlt /></div>
+                <div className="icons" onClick={() => { setShowEdit(true) }}><FaPencilAlt /></div>
                 <div className="icons"><BsTrash /></div>
                 <motion.div className="icons iconsNoFlex" onClick={updateThisItemToCompleted} onMouseEnter={framerStartCheckAnimation} onMouseLeave={framerEndCheckAnimation}>
                     <motion.span className='checkEmpty' variants={spanVariant} animate={spanControl}><BsCheckCircle /></motion.span>
@@ -123,7 +136,17 @@ export const EachTodoItemComp = ({id, details, removeFunction}: todoItemsProps) 
                 </motion.div>
             </div>
             <div className="">
-                <div className="">{details}</div>
+                {showEdit === false && <div>{note}</div>}
+                {showEdit &&
+                    <div className="">
+                        <input
+                            type="text" value={note} onChange={(e) => { setNote(e.target.value) }}
+                            className='border py-3 px-5 w-[350px] rounded-md text-sm'
+                        />
+                        <button className='mx-5 text-xs font-semibold text-[#00a8ff] hover:underline' onClick={() => { updateTheDetailsOfThisItem(note) }}>Save update</button>
+                        <button className='mx-5 text-xs font-semibold text-[#df0e3a] hover:underline' onClick={() => { setShowEdit(false) }}>cancel</button>
+                    </div>
+                }
                 <div className="text-xs font-semibold text-[#a4b0be] mt-2">Added 20mins ago</div>
             </div>
         </motion.div>
