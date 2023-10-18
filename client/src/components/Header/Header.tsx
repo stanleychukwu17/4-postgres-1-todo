@@ -27,15 +27,29 @@ if (cached_user_dts) {
 function run_access_token_health_check () {
     axios.post(`${backEndPort}/healthCheck/accessToken`, userDts, {headers: {'Content-Type': 'application/json'}})
     .then(re => {
-        console.log(re.data)
+        // update the lastTime checked to be the current time
+        localStorage.setItem('last_24hr_check', `${new Date()}`)
+
+        // the below means the accessToken has expired and the refreshToken has also expired
+        if (re.data.msg === 'bad' && re.data.action === 'logout') {
+            location.href = '/logout'
+            return true;
+        }
+
+        // the below means the accessToken has expired and so a new accessToken was generated
+        if (re.data.msg === 'okay' && re.data.new_token === 'yes') {
+            localStorage.setItem('userDts', JSON.stringify({...userDts, accessToken:re.data.dts.newAccessToken}));
+            location.reload()
+        }
     })
     .catch(err => {
         console.log(err)
     })
 }
-const last1hr_check = localStorage.getItem('last1hr_check')
-if (last1hr_check) {
-    const storedDate = new Date(last1hr_check).getTime() // .getTime() returns the number of milliseconds
+
+const last_24hr_check = localStorage.getItem('last_24hr_check')
+if (last_24hr_check) {
+    const storedDate = new Date(last_24hr_check).getTime() // .getTime() returns the number of milliseconds
     const currentDate = new Date().getTime() // .getTime() returns the number of milliseconds
     const hourDiff = (currentDate - storedDate) / (1000 * 60 * 60); // converts the difference to hours.. since i want to know if the last check has been older than an 24hours
 
@@ -44,8 +58,8 @@ if (last1hr_check) {
         run_access_token_health_check()
     }
 } else {
-    const current_time = new Date("October 16, 2023 12:00:00")
-    localStorage.setItem('last1hr_check', `${current_time}`)
+    const current_time = new Date()
+    localStorage.setItem('last_24hr_check', `${current_time}`)
 }
 //--end--
 

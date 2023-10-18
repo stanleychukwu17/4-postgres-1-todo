@@ -68,6 +68,7 @@ export default function LoginComp() {
         });
     }
 
+
     const submitRegistration: SubmitHandler<RegisterRHF> = (data) => {
         setIsLoading2(true)
 
