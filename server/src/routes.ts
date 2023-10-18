@@ -15,6 +15,13 @@ const routes = (app: Express) => {
         res.json('its all good')
     })
 
+    // healthCheck for accessToken and refreshToken
+    app.get('/healthCheck/accessToken', (req, res) => {
+        const currentFilename = __filename;
+        log.info({currentFilename}, 'checking my log')
+        res.json('its all good')
+    })
+
     //--START-- routes for users
     // this route registers a new user
     app.post('/users/new_user', async (req: Request, res: Response) => {

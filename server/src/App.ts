@@ -29,6 +29,7 @@ app.use(cors({
     optionsSuccessStatus: 204, // Set the status for successful preflight requests
 }))
 
+//* Middlewares
 // checks to see if the user is a has a valid accessToken or refreshToken
 app.use(deserializeUser);
 
