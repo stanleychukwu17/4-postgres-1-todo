@@ -1,4 +1,7 @@
 import axios from 'axios';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime'
+dayjs.extend(relativeTime)
 import { useCallback, useState, useRef } from 'react';
 import { motion, useAnimationControls } from 'framer-motion';
 import {useForm, SubmitHandler} from "react-hook-form"
@@ -6,10 +9,10 @@ import { useAppSelector } from '../../redux/hook';
 import {BsFillCheckCircleFill, BsTrash, BsCheckCircle} from 'react-icons/bs'
 import {FaPencilAlt} from 'react-icons/fa'
 
+
 import MessageComp, {MessageCompProps} from "../Message/MessageComp";
 
 import { spanVariant } from './profile.variants';
-
 
 // gets the backEnd url from our .env file
 const backEndPort = import.meta.env.VITE_BACKEND_PORT;
@@ -20,9 +23,13 @@ const backEndPort = import.meta.env.VITE_BACKEND_PORT;
 type todo_item_input = {
     details: string
 }
+type InputComponentProps = {
+    items: todoItemsProps[] | [],
+    setItems: React.Dispatch<React.SetStateAction<todoItemsProps[] | []>>
+}
 
 // the input component - for adding of items to the todoList
-export const InputComponent = () => {
+export const InputComponent = ({items, setItems} : InputComponentProps) => {
     const [showAlert, setShowAlert] = useState<boolean>(false)
     const [alertMsg, setAlertMsg] = useState<MessageCompProps>({msg_type:'', msg_dts:''})
     const userInfo = useAppSelector(state => state.user)
@@ -32,15 +39,14 @@ export const InputComponent = () => {
     const add_item_to_todo_list: SubmitHandler<todo_item_input> = (data) => {
         // attach the accessToken, session_fid, refreshToken to the request... they're important for validation sake
         const toSend = {...userInfo, ...data}
+        todoSetValue("details", "") // RHF hook used here - empty's the input field
 
         axios.post(`${backEndPort}/todo/new_todo`, toSend, {headers: {'Content-Type': 'application/json'}})
         .then((res) => {
+            console.log(res.data)
             if(res.data.msg === 'okay') {
-                // dispatch(updateUser({loggedIn: 'yes', ...res.data}))
-
-                // clears all of the input field for login
-                todoSetValue("details", "") // RHF hook used here
-
+                const newItems = [{...res.data}, ...items]
+                setItems(newItems);
             } else {
                 setShowAlert(true)
                 setAlertMsg({'msg_type':res.data.msg, 'msg_dts':res.data.cause})
@@ -85,12 +91,14 @@ export type todoItemsProps = {
 } & {
     removeFunction: (id:number) => void
 }
-export const EachTodoItemComp = ({id, details, removeFunction}: todoItemsProps) => {
+export const EachTodoItemComp = ({id, details, date_added, removeFunction}: todoItemsProps) => {
     const [note, setNote] = useState(details)
     const [showEdit, setShowEdit] = useState<boolean>(false)
     const boxRef = useRef<HTMLDivElement>({} as HTMLDivElement)
     const spanControl = useAnimationControls()
     const userInfo = useAppSelector(state => state.user)
+    // const dateToShow = dayjs(date_added).format('DD/MM/YYYY') - "18/10/2023"
+    const daysAgo = dayjs().to(dayjs(date_added)) // "dateToShow ago"
 
     // marking of the item to completed
     const updateThisItemToCompleted = () => {
@@ -158,7 +166,7 @@ export const EachTodoItemComp = ({id, details, removeFunction}: todoItemsProps) 
                         <button className='mx-5 text-xs font-semibold text-[#df0e3a] hover:underline' onClick={() => { setShowEdit(false) }}>cancel</button>
                     </div>
                 }
-                <div className="text-xs font-semibold text-[#a4b0be] mt-2">Added 20mins ago</div>
+                <div className="text-xs font-semibold text-[#a4b0be] mt-2">Added {daysAgo}</div>
             </div>
         </motion.div>
     )

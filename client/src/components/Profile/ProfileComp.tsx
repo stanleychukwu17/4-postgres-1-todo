@@ -22,7 +22,7 @@ const backEndPort = import.meta.env.VITE_BACKEND_PORT;
 
 export default function ProfileComp() {
     const userInfo = useAppSelector(state => state.user)
-    const [items, setItems] = useState<todoItemsProps[]|null>(null)
+    const [items, setItems] = useState<todoItemsProps[]|[]>([])
 
     // for deleting an item from the list of todo items
     const remove_this_item_from_list_of_items = (id:number) => {
@@ -50,20 +50,29 @@ export default function ProfileComp() {
         fetch_all_the_items_in_this_user_todo_list()
     }, [])
 
+    // useEffect(() => {
+    //     console.log(items)
+    // }, [items])
+
     return (
         <div className="profile_Cvr1">
             <Header />
             <div className="padding-x flex">
                 <div className="w-[65%]">
                     {/* THE INPUT COMPONENT FOR ADDING A NEW ITEM TO THE TODO LIST */}
-                    <InputComponent />
+                    <InputComponent items={items} setItems={setItems} />
 
                     <div className="">
                         <div className="p-6 bg-[#f5f6fa] font-semibold"><h2>Get busy</h2></div>
 
                         {/* EACH OF THE TODO ITEMS */}
                         <div className="">
-                            {items && items.map((ech, index) => <EachTodoItemComp key={`todoItem-${index}`} {...ech} removeFunction={remove_this_item_from_list_of_items} /> )}
+                            {items && items.map((ech) => {
+                                console.log(ech, 'from home comp')
+                                return (
+                                    <EachTodoItemComp key={`todoItem-${ech.id}`} {...ech} removeFunction={remove_this_item_from_list_of_items} />
+                                )
+                            })}
                         </div>
                     </div>
                 </div>
