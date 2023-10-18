@@ -16,10 +16,10 @@ const routes = (app: Express) => {
     })
 
     // healthCheck for accessToken and refreshToken
-    app.get('/healthCheck/accessToken', (req, res) => {
-        const currentFilename = __filename;
-        log.info({currentFilename}, 'checking my log')
-        res.json('its all good')
+    app.post('/healthCheck/accessToken', requireUser, (req, res) => {
+        //@ts-ignore
+        console.log(req.loggedInDts)
+        res.json('all good!')
     })
 
     //--START-- routes for users
