@@ -48,11 +48,7 @@ export default function ProfileComp() {
 
     useEffect(() => {
         fetch_all_the_items_in_this_user_todo_list()
-    }, [])
-
-    // useEffect(() => {
-    //     console.log(items)
-    // }, [items])
+    }, [fetch_all_the_items_in_this_user_todo_list])
 
     return (
         <div className="profile_Cvr1">
@@ -62,16 +58,13 @@ export default function ProfileComp() {
                     {/* THE INPUT COMPONENT FOR ADDING A NEW ITEM TO THE TODO LIST */}
                     <InputComponent items={items} setItems={setItems} />
 
-                    <div className="">
+                    <div>
                         <div className="p-6 bg-[#f5f6fa] font-semibold"><h2>Get busy</h2></div>
 
                         {/* EACH OF THE TODO ITEMS */}
-                        <div className="">
+                        <div>
                             {items && items.map((ech) => {
-                                console.log(ech, 'from home comp')
-                                return (
-                                    <EachTodoItemComp key={`todoItem-${ech.id}`} {...ech} removeFunction={remove_this_item_from_list_of_items} />
-                                )
+                                return <EachTodoItemComp key={`todoItem-${ech.id}`} {...ech} removeFunction={remove_this_item_from_list_of_items} />
                             })}
                         </div>
                     </div>

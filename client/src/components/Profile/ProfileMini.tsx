@@ -51,7 +51,6 @@ export const InputComponent = ({items, setItems} : InputComponentProps) => {
                 setShowAlert(true)
                 setAlertMsg({'msg_type':res.data.msg, 'msg_dts':res.data.cause})
             }
-            // setIsLoading1(false)
         })
         .catch((err) => {
             setShowAlert(true)
