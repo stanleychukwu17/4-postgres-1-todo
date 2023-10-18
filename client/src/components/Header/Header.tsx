@@ -25,10 +25,9 @@ if (cached_user_dts) {
 
 //--start-- validates the accessToken and Refresh token every 24_hour
 function run_access_token_health_check () {
-    
     axios.post(`${backEndPort}/healthCheck/accessToken`, userDts, {headers: {'Content-Type': 'application/json'}})
     .then(re => {
-        console.log(re)
+        console.log(re.data)
     })
     .catch(err => {
         console.log(err)
@@ -40,7 +39,7 @@ if (last1hr_check) {
     const currentDate = new Date().getTime() // .getTime() returns the number of milliseconds
     const hourDiff = (currentDate - storedDate) / (1000 * 60 * 60); // converts the difference to hours.. since i want to know if the last check has been older than an 24hours
 
-    if (hourDiff >= 24) {
+    if (hourDiff >= 24 && userDts.loggedIn === 'yes') {
         console.log('time for use to check for a new accessToken', hourDiff)
         run_access_token_health_check()
     }
