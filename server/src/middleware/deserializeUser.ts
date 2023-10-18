@@ -17,12 +17,9 @@ async function deserializeUser(req: Request, res: Response, next: NextFunction) 
         return next();
     }
 
-    let { payload, expired } = verifyJWT(accessToken as string);
+    const { payload, expired } = verifyJWT(accessToken as string);
 
     // the session_fid received from the request should be the same as the one from the payload
-    // FAILED: - change the let above to const
-    expired = true
-
     if (expired === false) { // this means the accessToken is still valid
         //@ts-ignore
         if (payload.session_fid != session_fid) {
@@ -37,6 +34,7 @@ async function deserializeUser(req: Request, res: Response, next: NextFunction) 
         if (payload && user_id > 0) {
             // @ts-ignore
             req.loggedInDts = {session_fid, user_id}
+            req.body.loggedInDts = {session_fid, user_id};
             return next()
         }
     }
