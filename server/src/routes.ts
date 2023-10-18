@@ -18,8 +18,16 @@ const routes = (app: Express) => {
     // healthCheck for accessToken and refreshToken
     app.post('/healthCheck/accessToken', requireUser, (req, res) => {
         //@ts-ignore
-        console.log(req.loggedInDts)
-        res.json('all good!')
+        const new_token = req.body.loggedInDts.new_token || ''
+        let returnMsg = {}
+
+        if (new_token === 'yes') {
+            returnMsg = {...show_good_message(), new_token, dts:req.body.loggedInDts}
+        } else {
+            returnMsg = show_good_message()
+        }
+
+        res.json(returnMsg)
     })
 
     //--START-- routes for users

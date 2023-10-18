@@ -41,9 +41,6 @@ async function deserializeUser(req: Request, res: Response, next: NextFunction) 
         }
     }
 
-    // FAILED: - first - AccessToken is expired and refresh Token is expired
-    return next();
-
     // expired accessToken, but user has a valid refreshToken
     const { payload: refresh } = expired && refreshToken ? verifyJWT(refreshToken as string) : { payload: null };
     if (!refresh) {
@@ -53,10 +50,9 @@ async function deserializeUser(req: Request, res: Response, next: NextFunction) 
     // @ts-ignore
     const session = await get_this_session_details(refresh.session_fid as unknown as number)
     const user_id = session.user_id
-    if (session.num_rows <= 0 || user_id <= 0) {
+    if (session.num_rows <= 0 || user_id <= 0) { // meaning an invalid session_fid was passed
         return next();
     }
-
 
     // creates a new access token
     const newAccessToken = signJWT({session_fid}, process.env.JWT_TIME_1 as string);
@@ -65,8 +61,10 @@ async function deserializeUser(req: Request, res: Response, next: NextFunction) 
     const user = verifyJWT(newAccessToken).payload;
     const loggedInDts = {session_fid, user_id, new_token:'yes', newAccessToken}
 
+    // attaches the user logged in details to the req, so that is can be available to all
     // @ts-ignore
     req.loggedInDts = loggedInDts;
+    req.body.loggedInDts = loggedInDts;
 
     return next();
 }
