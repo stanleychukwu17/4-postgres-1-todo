@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import {FiChevronsDown} from 'react-icons/fi'
 import { useAppSelector } from '../../redux/hook';
 
@@ -62,11 +63,27 @@ export default function ProfileComp() {
                         <div className="p-6 bg-[#f5f6fa] font-semibold"><h2>Get busy</h2></div>
 
                         {/* EACH OF THE TODO ITEMS */}
-                        <div>
-                            {items && items.map((ech) => {
-                                return <EachTodoItemComp key={`todoItem-${ech.id}`} {...ech} removeFunction={remove_this_item_from_list_of_items} />
-                            })}
-                        </div>
+                        <DragDropContext onDragEnd={() => {}}>
+                            <Droppable droppableId='todo_items'>
+                                {(provided) => (
+                                    <ul {...provided.droppableProps} ref={provided.innerRef}>
+                                        {items && items.map((ech, index) => {
+                                            return (
+                                                <Draggable key={`todoItem-${ech.id}`} draggableId={`todoItem-${ech.id}`} index={index}>
+                                                    {(provided) => {
+                                                        return (
+                                                            <li {...provided.draggableProps} {... provided.dragHandleProps} ref={provided.innerRef}>
+                                                                <EachTodoItemComp {...ech} removeFunction={remove_this_item_from_list_of_items} />
+                                                            </li>
+                                                        )
+                                                    }}
+                                               </Draggable>
+                                            )
+                                        })}
+                                    </ul>
+                                )}
+                            </Droppable>
+                        </DragDropContext>
                     </div>
                 </div>
                 <div className="w-[35%] flex justify-center text-center">
