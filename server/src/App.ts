@@ -30,8 +30,7 @@ app.use(cors({
 }))
 
 //* Middlewares
-// checks to see if the user is a has a valid accessToken or refreshToken
-app.use(deserializeUser);
+app.use(deserializeUser); // checks to see if the user is a has a valid accessToken or refreshToken
 
 // for quick opening of port if you don't have time to wait for the database connection before opening of port
 // app.listen(port, () => {
