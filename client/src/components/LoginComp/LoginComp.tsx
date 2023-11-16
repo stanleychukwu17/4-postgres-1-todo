@@ -7,7 +7,7 @@ import { updateUser } from '../../redux/userSlice';
 
 import Header from '../Header/Header';
 import MessageComp, {MessageCompProps} from "../Message/MessageComp";
-import './LoginComp..scss'
+import './LoginComp.scss'
 
 // gets the backEnd url from our .env file
 const backEndPort = import.meta.env.VITE_BACKEND_PORT;
@@ -32,8 +32,8 @@ export default function LoginComp() {
     const userInfo = useAppSelector(state => state.user)
     const [isLoading1, setIsLoading1] = useState<boolean>(false) // used for login
     const [isLoading2, setIsLoading2] = useState<boolean>(false) // used for registering
-    const [showAlert, setShowAlert] = useState<boolean>(false)
-    const [alertMsg, setAlertMsg] = useState<MessageCompProps>({msg_type:'', msg_dts:''})
+    const [showAlert, setShowAlert] = useState<boolean>(false) // for showing of error messages from the backend
+    const [alertMsg, setAlertMsg] = useState<MessageCompProps>({msg_type:'', msg_dts:''}) // the error message
 
     // setting up React Hook Form to handle the forms below(i.e both the login and registration forms)
     const { register: registerLogin, handleSubmit: handleLogin, setValue: loginSetValue, formState: {errors:loginError} } = useForm<LoginForRHF>()
@@ -67,7 +67,6 @@ export default function LoginComp() {
             setIsLoading1(false)
         });
     }
-
 
     const submitRegistration: SubmitHandler<RegisterRHF> = (data) => {
         setIsLoading2(true)
